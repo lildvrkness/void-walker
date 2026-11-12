@@ -1,542 +1,342 @@
 {
-  "hero_fullbody": {
-    "file": "assets/sprites/hero_fullbody.png",
-    "width": 110,
-    "height": 343,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      8,
-      24,
-      198,
-      435
-    ]
-  },
-  "hero_portrait": {
-    "file": "assets/sprites/hero_portrait.png",
-    "width": 110,
-    "height": 96,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      190,
-      12,
-      350,
-      202
-    ]
-  },
-  "hero_idle_01": {
-    "file": "assets/sprites/hero_idle_01.png",
-    "width": 33,
-    "height": 61,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      355,
-      28,
-      420,
-      140
-    ]
-  },
-  "hero_idle_02": {
-    "file": "assets/sprites/hero_idle_02.png",
-    "width": 24,
-    "height": 63,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      422,
-      28,
-      490,
-      140
-    ]
-  },
-  "hero_idle_03": {
-    "file": "assets/sprites/hero_idle_03.png",
-    "width": 35,
-    "height": 53,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      490,
-      28,
-      558,
-      140
-    ]
-  },
-  "hero_walk_01": {
-    "file": "assets/sprites/hero_walk_01.png",
-    "width": 37,
-    "height": 49,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      565,
-      28,
-      638,
-      140
-    ]
-  },
-  "hero_walk_02": {
-    "file": "assets/sprites/hero_walk_02.png",
-    "width": 22,
-    "height": 61,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      638,
-      28,
-      710,
-      140
-    ]
-  },
-  "hero_walk_03": {
-    "file": "assets/sprites/hero_walk_03.png",
-    "width": 21,
-    "height": 61,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      710,
-      28,
-      785,
-      140
-    ]
-  },
-  "hero_walk_04": {
-    "file": "assets/sprites/hero_walk_04.png",
-    "width": 24,
-    "height": 58,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      785,
-      28,
-      855,
-      140
-    ]
-  },
-  "hero_attack_01": {
-    "file": "assets/sprites/hero_attack_01.png",
-    "width": 83,
-    "height": 57,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      355,
-      155,
-      455,
-      270
-    ]
-  },
-  "hero_attack_02": {
-    "file": "assets/sprites/hero_attack_02.png",
-    "width": 105,
-    "height": 58,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      465,
-      155,
-      570,
-      270
-    ]
-  },
-  "hero_attack_03": {
-    "file": "assets/sprites/hero_attack_03.png",
-    "width": 45,
-    "height": 46,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      580,
-      155,
-      690,
-      270
-    ]
-  },
-  "hero_attack_04": {
-    "file": "assets/sprites/hero_attack_04.png",
-    "width": 97,
-    "height": 70,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      700,
-      155,
-      805,
-      270
-    ]
-  },
-  "hero_hurt_01": {
-    "file": "assets/sprites/hero_hurt_01.png",
-    "width": 40,
-    "height": 57,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      250,
-      375,
-      340,
-      470
-    ]
-  },
-  "hero_hurt_02": {
-    "file": "assets/sprites/hero_hurt_02.png",
-    "width": 31,
-    "height": 48,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      345,
-      375,
-      435,
-      470
-    ]
-  },
-  "black_eel": {
-    "file": "assets/sprites/black_eel.png",
-    "width": 79,
-    "height": 57,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      10,
-      480,
-      120,
-      595
-    ]
-  },
-  "voidling": {
-    "file": "assets/sprites/voidling.png",
-    "width": 54,
-    "height": 34,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      120,
-      480,
-      225,
-      590
-    ]
-  },
-  "amphibian_minion": {
-    "file": "assets/sprites/amphibian_minion.png",
-    "width": 33,
-    "height": 48,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      225,
-      485,
-      335,
-      595
-    ]
-  },
-  "amphibian_warden": {
-    "file": "assets/sprites/amphibian_warden.png",
-    "width": 159,
-    "height": 163,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      330,
-      485,
-      505,
-      715
-    ]
-  },
-  "darkling_01": {
-    "file": "assets/sprites/darkling_01.png",
-    "width": 111,
-    "height": 174,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      520,
-      490,
-      635,
-      715
-    ]
-  },
-  "darkling_02": {
-    "file": "assets/sprites/darkling_02.png",
-    "width": 89,
-    "height": 152,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      635,
-      490,
-      750,
-      715
-    ]
-  },
-  "nail_witch": {
-    "file": "assets/sprites/nail_witch.png",
-    "width": 166,
-    "height": 228,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      750,
-      480,
-      940,
-      720
-    ]
-  },
-  "void_demon_phase1": {
-    "file": "assets/sprites/void_demon_phase1.png",
-    "width": 319,
-    "height": 254,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      935,
-      470,
-      1265,
-      740
-    ]
-  },
-  "void_demon_phase2": {
-    "file": "assets/sprites/void_demon_phase2.png",
-    "width": 256,
-    "height": 267,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1260,
-      455,
-      1530,
-      745
-    ]
-  },
-  "weapon_sword": {
-    "file": "assets/sprites/weapon_sword.png",
-    "width": 59,
-    "height": 102,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1090,
-      25,
-      1170,
-      190
-    ]
-  },
-  "weapon_knife": {
-    "file": "assets/sprites/weapon_knife.png",
-    "width": 57,
-    "height": 101,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1170,
-      25,
-      1240,
-      190
-    ]
-  },
-  "weapon_mace": {
-    "file": "assets/sprites/weapon_mace.png",
-    "width": 33,
-    "height": 69,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1240,
-      25,
-      1320,
-      190
-    ]
-  },
-  "weapon_staff": {
-    "file": "assets/sprites/weapon_staff.png",
-    "width": 67,
-    "height": 127,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1320,
-      25,
-      1400,
-      190
-    ]
-  },
-  "void_spiral_orb": {
-    "file": "assets/sprites/void_spiral_orb.png",
-    "width": 92,
-    "height": 98,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1400,
-      20,
-      1530,
-      195
-    ]
-  },
-  "armor_set_01": {
-    "file": "assets/sprites/armor_set_01.png",
-    "width": 75,
-    "height": 100,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1100,
-      220,
-      1180,
-      440
-    ]
-  },
-  "armor_set_02": {
-    "file": "assets/sprites/armor_set_02.png",
-    "width": 55,
-    "height": 76,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1180,
-      220,
-      1260,
-      440
-    ]
-  },
-  "armor_set_03": {
-    "file": "assets/sprites/armor_set_03.png",
-    "width": 81,
-    "height": 77,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1260,
-      220,
-      1350,
-      440
-    ]
-  },
-  "armor_set_04": {
-    "file": "assets/sprites/armor_set_04.png",
-    "width": 44,
-    "height": 69,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1350,
-      220,
-      1440,
-      440
-    ]
-  },
-  "void_crate": {
-    "file": "assets/sprites/void_crate.png",
-    "width": 95,
-    "height": 115,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      645,
-      785,
-      740,
-      900
-    ]
-  },
-  "void_crate_broken": {
-    "file": "assets/sprites/void_crate_broken.png",
-    "width": 21,
-    "height": 21,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      720,
-      875,
-      810,
-      1005
-    ]
-  },
-  "healing_potion": {
-    "file": "assets/sprites/healing_potion.png",
-    "width": 27,
-    "height": 40,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1110,
-      845,
-      1170,
-      925
-    ]
-  },
-  "void_potion": {
-    "file": "assets/sprites/void_potion.png",
-    "width": 23,
-    "height": 40,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1170,
-      845,
-      1235,
-      925
-    ]
-  },
-  "void_crystal": {
-    "file": "assets/sprites/void_crystal.png",
-    "width": 26,
-    "height": 64,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      265,
-      760,
-      370,
-      950
-    ]
-  },
-  "portal_arch": {
-    "file": "assets/sprites/portal_arch.png",
-    "width": 82,
-    "height": 217,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      520,
-      750,
-      655,
-      970
-    ]
-  },
-  "dead_tree": {
-    "file": "assets/sprites/dead_tree.png",
-    "width": 136,
-    "height": 132,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      1115,
-      740,
-      1260,
-      1005
-    ]
-  },
-  "stone_pillar": {
-    "file": "assets/sprites/stone_pillar.png",
-    "width": 23,
-    "height": 22,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      900,
-      760,
-      980,
-      990
-    ]
-  },
-  "ground_tile_01": {
-    "file": "assets/sprites/ground_tile_01.png",
-    "width": 110,
-    "height": 120,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      10,
-      780,
-      120,
-      900
-    ]
-  },
-  "ground_tile_02": {
-    "file": "assets/sprites/ground_tile_02.png",
-    "width": 115,
-    "height": 120,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      125,
-      780,
-      240,
-      900
-    ]
-  },
-  "ground_tile_03": {
-    "file": "assets/sprites/ground_tile_03.png",
-    "width": 53,
-    "height": 42,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      10,
-      900,
-      130,
-      1020
-    ]
-  },
-  "ground_tile_04": {
-    "file": "assets/sprites/ground_tile_04.png",
-    "width": 38,
-    "height": 60,
-    "source_atlas": "a_dark_gothic_fantasy_game_asset_sheet_in_a_clean.png",
-    "source_box": [
-      130,
-      900,
-      250,
-      1020
-    ]
+  "version": "repaired-2026-11-12",
+  "description": "Rebuilt transparent runtime sprites from the approved reference atlases.",
+  "sprites": {
+    "amphibian_minion": {
+      "file": "assets/sprites/amphibian_minion.png",
+      "width": 129,
+      "height": 125,
+      "format": "RGBA PNG"
+    },
+    "amphibian_warden": {
+      "file": "assets/sprites/amphibian_warden.png",
+      "width": 165,
+      "height": 159,
+      "format": "RGBA PNG"
+    },
+    "armor_set_01": {
+      "file": "assets/sprites/armor_set_01.png",
+      "width": 67,
+      "height": 135,
+      "format": "RGBA PNG"
+    },
+    "armor_set_02": {
+      "file": "assets/sprites/armor_set_02.png",
+      "width": 80,
+      "height": 135,
+      "format": "RGBA PNG"
+    },
+    "armor_set_03": {
+      "file": "assets/sprites/armor_set_03.png",
+      "width": 77,
+      "height": 128,
+      "format": "RGBA PNG"
+    },
+    "armor_set_04": {
+      "file": "assets/sprites/armor_set_04.png",
+      "width": 77,
+      "height": 104,
+      "format": "RGBA PNG"
+    },
+    "black_eel": {
+      "file": "assets/sprites/black_eel.png",
+      "width": 142,
+      "height": 158,
+      "format": "RGBA PNG"
+    },
+    "darkling_01": {
+      "file": "assets/sprites/darkling_01.png",
+      "width": 104,
+      "height": 176,
+      "format": "RGBA PNG"
+    },
+    "darkling_02": {
+      "file": "assets/sprites/darkling_02.png",
+      "width": 104,
+      "height": 176,
+      "format": "RGBA PNG"
+    },
+    "dead_tree": {
+      "file": "assets/sprites/dead_tree.png",
+      "width": 80,
+      "height": 130,
+      "format": "RGBA PNG"
+    },
+    "ground_tile_01": {
+      "file": "assets/sprites/ground_tile_01.png",
+      "width": 269,
+      "height": 275,
+      "format": "RGBA PNG"
+    },
+    "ground_tile_02": {
+      "file": "assets/sprites/ground_tile_02.png",
+      "width": 270,
+      "height": 275,
+      "format": "RGBA PNG"
+    },
+    "ground_tile_03": {
+      "file": "assets/sprites/ground_tile_03.png",
+      "width": 245,
+      "height": 275,
+      "format": "RGBA PNG"
+    },
+    "ground_tile_04": {
+      "file": "assets/sprites/ground_tile_04.png",
+      "width": 270,
+      "height": 275,
+      "format": "RGBA PNG"
+    },
+    "healing_potion": {
+      "file": "assets/sprites/healing_potion.png",
+      "width": 33,
+      "height": 61,
+      "format": "RGBA PNG"
+    },
+    "hero_attack_01": {
+      "file": "assets/sprites/hero_attack_01.png",
+      "width": 79,
+      "height": 95,
+      "format": "RGBA PNG"
+    },
+    "hero_attack_02": {
+      "file": "assets/sprites/hero_attack_02.png",
+      "width": 64,
+      "height": 77,
+      "format": "RGBA PNG"
+    },
+    "hero_attack_03": {
+      "file": "assets/sprites/hero_attack_03.png",
+      "width": 63,
+      "height": 95,
+      "format": "RGBA PNG"
+    },
+    "hero_attack_04": {
+      "file": "assets/sprites/hero_attack_04.png",
+      "width": 85,
+      "height": 92,
+      "format": "RGBA PNG"
+    },
+    "hero_fullbody": {
+      "file": "assets/sprites/hero_fullbody.png",
+      "width": 172,
+      "height": 407,
+      "format": "RGBA PNG"
+    },
+    "hero_hurt_01": {
+      "file": "assets/sprites/hero_hurt_01.png",
+      "width": 62,
+      "height": 84,
+      "format": "RGBA PNG"
+    },
+    "hero_hurt_02": {
+      "file": "assets/sprites/hero_hurt_02.png",
+      "width": 59,
+      "height": 73,
+      "format": "RGBA PNG"
+    },
+    "hero_idle_01": {
+      "file": "assets/sprites/hero_idle_01.png",
+      "width": 56,
+      "height": 85,
+      "format": "RGBA PNG"
+    },
+    "hero_idle_02": {
+      "file": "assets/sprites/hero_idle_02.png",
+      "width": 55,
+      "height": 85,
+      "format": "RGBA PNG"
+    },
+    "hero_idle_03": {
+      "file": "assets/sprites/hero_idle_03.png",
+      "width": 53,
+      "height": 80,
+      "format": "RGBA PNG"
+    },
+    "hero_idle_04": {
+      "file": "assets/sprites/hero_idle_04.png",
+      "width": 75,
+      "height": 110,
+      "format": "RGBA PNG"
+    },
+    "hero_idle_05": {
+      "file": "assets/sprites/hero_idle_05.png",
+      "width": 74,
+      "height": 108,
+      "format": "RGBA PNG"
+    },
+    "hero_idle_06": {
+      "file": "assets/sprites/hero_idle_06.png",
+      "width": 74,
+      "height": 109,
+      "format": "RGBA PNG"
+    },
+    "hero_idle_07": {
+      "file": "assets/sprites/hero_idle_07.png",
+      "width": 81,
+      "height": 104,
+      "format": "RGBA PNG"
+    },
+    "hero_portrait": {
+      "file": "assets/sprites/hero_portrait.png",
+      "width": 110,
+      "height": 96,
+      "format": "RGBA PNG"
+    },
+    "hero_walk_01": {
+      "file": "assets/sprites/hero_walk_01.png",
+      "width": 56,
+      "height": 75,
+      "format": "RGBA PNG"
+    },
+    "hero_walk_02": {
+      "file": "assets/sprites/hero_walk_02.png",
+      "width": 52,
+      "height": 68,
+      "format": "RGBA PNG"
+    },
+    "hero_walk_03": {
+      "file": "assets/sprites/hero_walk_03.png",
+      "width": 53,
+      "height": 68,
+      "format": "RGBA PNG"
+    },
+    "hero_walk_04": {
+      "file": "assets/sprites/hero_walk_04.png",
+      "width": 48,
+      "height": 67,
+      "format": "RGBA PNG"
+    },
+    "hero_walk_05": {
+      "file": "assets/sprites/hero_walk_05.png",
+      "width": 100,
+      "height": 94,
+      "format": "RGBA PNG"
+    },
+    "hero_walk_06": {
+      "file": "assets/sprites/hero_walk_06.png",
+      "width": 100,
+      "height": 93,
+      "format": "RGBA PNG"
+    },
+    "hero_walk_07": {
+      "file": "assets/sprites/hero_walk_07.png",
+      "width": 114,
+      "height": 98,
+      "format": "RGBA PNG"
+    },
+    "nail_witch": {
+      "file": "assets/sprites/nail_witch.png",
+      "width": 218,
+      "height": 178,
+      "format": "RGBA PNG"
+    },
+    "portal_arch": {
+      "file": "assets/sprites/portal_arch.png",
+      "width": 160,
+      "height": 144,
+      "format": "RGBA PNG"
+    },
+    "region_bg_center": {
+      "file": "assets/sprites/region_bg_center.png",
+      "width": 270,
+      "height": 250,
+      "format": "RGBA PNG"
+    },
+    "region_bg_factory": {
+      "file": "assets/sprites/region_bg_factory.png",
+      "width": 245,
+      "height": 250,
+      "format": "RGBA PNG"
+    },
+    "region_bg_oasis": {
+      "file": "assets/sprites/region_bg_oasis.png",
+      "width": 270,
+      "height": 250,
+      "format": "RGBA PNG"
+    },
+    "region_bg_sanctum": {
+      "file": "assets/sprites/region_bg_sanctum.png",
+      "width": 270,
+      "height": 250,
+      "format": "RGBA PNG"
+    },
+    "stone_pillar": {
+      "file": "assets/sprites/stone_pillar.png",
+      "width": 50,
+      "height": 135,
+      "format": "RGBA PNG"
+    },
+    "void_crate": {
+      "file": "assets/sprites/void_crate.png",
+      "width": 87,
+      "height": 83,
+      "format": "RGBA PNG"
+    },
+    "void_crate_broken": {
+      "file": "assets/sprites/void_crate_broken.png",
+      "width": 115,
+      "height": 64,
+      "format": "RGBA PNG"
+    },
+    "void_crystal": {
+      "file": "assets/sprites/void_crystal.png",
+      "width": 50,
+      "height": 93,
+      "format": "RGBA PNG"
+    },
+    "void_demon_phase1": {
+      "file": "assets/sprites/void_demon_phase1.png",
+      "width": 328,
+      "height": 401,
+      "format": "RGBA PNG"
+    },
+    "void_demon_phase2": {
+      "file": "assets/sprites/void_demon_phase2.png",
+      "width": 328,
+      "height": 401,
+      "format": "RGBA PNG"
+    },
+    "void_potion": {
+      "file": "assets/sprites/void_potion.png",
+      "width": 35,
+      "height": 60,
+      "format": "RGBA PNG"
+    },
+    "void_spiral_orb": {
+      "file": "assets/sprites/void_spiral_orb.png",
+      "width": 95,
+      "height": 139,
+      "format": "RGBA PNG"
+    },
+    "voidling": {
+      "file": "assets/sprites/voidling.png",
+      "width": 130,
+      "height": 141,
+      "format": "RGBA PNG"
+    },
+    "weapon_knife": {
+      "file": "assets/sprites/weapon_knife.png",
+      "width": 80,
+      "height": 200,
+      "format": "RGBA PNG"
+    },
+    "weapon_mace": {
+      "file": "assets/sprites/weapon_mace.png",
+      "width": 85,
+      "height": 200,
+      "format": "RGBA PNG"
+    },
+    "weapon_staff": {
+      "file": "assets/sprites/weapon_staff.png",
+      "width": 80,
+      "height": 200,
+      "format": "RGBA PNG"
+    },
+    "weapon_sword": {
+      "file": "assets/sprites/weapon_sword.png",
+      "width": 90,
+      "height": 200,
+      "format": "RGBA PNG"
+    }
   }
 }
