@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#090611">
+  <meta name="description" content="Enter the Crackled Void in Void Walker, a short dark fantasy action RPG. Defeat three guardians, claim the Void Spiral, and face the demon at the heart of the fracture.">
+  <title>VOID WALKER — A dark fantasy action RPG</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="game-shell">
+    <canvas id="game" aria-label="Void Walker game"></canvas>
+    <div id="hud">
+      <div class="hud-top">
+        <div class="player-panel">
+          <div class="portrait">V</div>
+          <div class="bars">
+            <div class="bar-label"><span>VITALITY</span><span id="hp-text">100 / 100</span></div>
+            <div class="bar"><i id="hp-fill"></i></div>
+            <div class="bar-label small"><span>VOID RESONANCE</span><span id="xp-text">0</span></div>
+            <div class="bar void"><i id="xp-fill"></i></div>
+          </div>
+        </div>
+        <div class="region-name"><span>✦</span><b id="region-title">THE CRACKLED VOID</b><small id="region-subtitle">A land that remembers the dark</small></div>
+        <div class="right-hud"><span id="armor-count">ARMOR 0/3</span><button id="restart-run-btn">RESTART</button></div>
+      </div>
+      <div id="boss-panel" class="hidden">
+        <div class="boss-name" id="boss-name">VOID CREATURE</div>
+        <div class="boss-bar"><i id="boss-fill"></i></div>
+        <div class="boss-phase" id="boss-phase">PHASE I</div>
+      </div>
+      <div class="bottom-hud">
+        <div class="weapon-card"><small>EQUIPPED</small><b id="weapon-name">Rusted Sword</b><span id="weapon-level">DAMAGE 18</span></div>
+        <div class="quick-slots" id="quick-slots">
+          <button class="slot active" data-slot="0"><span>1</span>⚔</button>
+          <button class="slot" data-slot="1"><span>2</span>⌁</button>
+          <button class="slot" data-slot="2"><span>3</span>✣</button>
+          <button class="slot" data-slot="3"><span>4</span>†</button>
+        </div>
+        <div class="hint" id="hint">WASD / ARROWS MOVE · SPACE ATTACK · I INVENTORY</div>
+      </div>
+    </div>
+    <div id="overlay" class="hidden">
+      <section class="panel">
+        <button class="close" id="close-panel">×</button>
+        <p class="eyebrow">VOID WALKER</p>
+        <h1 id="panel-title">INVENTORY</h1>
+        <div id="panel-content"></div>
+      </section>
+    </div>
+    <div id="toast"></div>
+    <div class="mobile-controls">
+      <div class="dpad">
+        <button data-move="up">▲</button><div><button data-move="left">◀</button><button data-move="down">▼</button><button data-move="right">▶</button></div>
+      </div>
+      <button id="mobile-attack" class="attack-btn">ATTACK</button>
+      <button id="mobile-inventory" class="bag-btn">BAG</button>
+    </div>
+    <div id="start-screen">
+      <div class="start-mark">✦</div>
+      <p class="eyebrow">A DARK FANTASY ACTION RPG</p>
+      <h1>VOID<br><em>WALKER</em></h1>
+      <p class="tagline">The dark does not wait for you to be ready.</p>
+      <button id="start-btn">ENTER THE VOID</button>
+      <small>WASD / ARROWS TO MOVE · MOUSE TO AIM · SPACE / J TO ATTACK · I FOR INVENTORY</small>
+    </div>
+  </main>
+  <script src="src/game.js"></script>
+</body>
+</html>
