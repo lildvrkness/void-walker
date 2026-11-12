@@ -1,6 +1,6 @@
 {
-  "version": "repaired-2026-11-12",
-  "description": "Rebuilt transparent runtime sprites from the approved reference atlases.",
+  "version": "final-repair-v2-2026-11-12",
+  "description": "Corrected runtime sprites extracted from the supplied reference atlases. Obsolete scene-thumbnail and unrelated icon crops are excluded.",
   "sprites": {
     "amphibian_minion": {
       "file": "assets/sprites/amphibian_minion.png",
@@ -16,26 +16,26 @@
     },
     "armor_set_01": {
       "file": "assets/sprites/armor_set_01.png",
-      "width": 67,
-      "height": 135,
+      "width": 88,
+      "height": 92,
       "format": "RGBA PNG"
     },
     "armor_set_02": {
       "file": "assets/sprites/armor_set_02.png",
-      "width": 80,
-      "height": 135,
+      "width": 95,
+      "height": 95,
       "format": "RGBA PNG"
     },
     "armor_set_03": {
       "file": "assets/sprites/armor_set_03.png",
-      "width": 77,
-      "height": 128,
+      "width": 95,
+      "height": 95,
       "format": "RGBA PNG"
     },
     "armor_set_04": {
       "file": "assets/sprites/armor_set_04.png",
-      "width": 77,
-      "height": 104,
+      "width": 79,
+      "height": 94,
       "format": "RGBA PNG"
     },
     "black_eel": {
@@ -56,36 +56,6 @@
       "height": 176,
       "format": "RGBA PNG"
     },
-    "dead_tree": {
-      "file": "assets/sprites/dead_tree.png",
-      "width": 80,
-      "height": 130,
-      "format": "RGBA PNG"
-    },
-    "ground_tile_01": {
-      "file": "assets/sprites/ground_tile_01.png",
-      "width": 269,
-      "height": 275,
-      "format": "RGBA PNG"
-    },
-    "ground_tile_02": {
-      "file": "assets/sprites/ground_tile_02.png",
-      "width": 270,
-      "height": 275,
-      "format": "RGBA PNG"
-    },
-    "ground_tile_03": {
-      "file": "assets/sprites/ground_tile_03.png",
-      "width": 245,
-      "height": 275,
-      "format": "RGBA PNG"
-    },
-    "ground_tile_04": {
-      "file": "assets/sprites/ground_tile_04.png",
-      "width": 270,
-      "height": 275,
-      "format": "RGBA PNG"
-    },
     "healing_potion": {
       "file": "assets/sprites/healing_potion.png",
       "width": 33,
@@ -94,44 +64,38 @@
     },
     "hero_attack_01": {
       "file": "assets/sprites/hero_attack_01.png",
-      "width": 79,
-      "height": 95,
+      "width": 56,
+      "height": 85,
       "format": "RGBA PNG"
     },
     "hero_attack_02": {
       "file": "assets/sprites/hero_attack_02.png",
-      "width": 64,
-      "height": 77,
+      "width": 55,
+      "height": 85,
       "format": "RGBA PNG"
     },
     "hero_attack_03": {
       "file": "assets/sprites/hero_attack_03.png",
-      "width": 63,
-      "height": 95,
+      "width": 53,
+      "height": 80,
       "format": "RGBA PNG"
     },
     "hero_attack_04": {
       "file": "assets/sprites/hero_attack_04.png",
-      "width": 85,
-      "height": 92,
-      "format": "RGBA PNG"
-    },
-    "hero_fullbody": {
-      "file": "assets/sprites/hero_fullbody.png",
-      "width": 172,
-      "height": 407,
+      "width": 56,
+      "height": 85,
       "format": "RGBA PNG"
     },
     "hero_hurt_01": {
       "file": "assets/sprites/hero_hurt_01.png",
-      "width": 62,
-      "height": 84,
+      "width": 55,
+      "height": 85,
       "format": "RGBA PNG"
     },
     "hero_hurt_02": {
       "file": "assets/sprites/hero_hurt_02.png",
-      "width": 59,
-      "height": 73,
+      "width": 53,
+      "height": 80,
       "format": "RGBA PNG"
     },
     "hero_idle_01": {
@@ -226,8 +190,8 @@
     },
     "nail_witch": {
       "file": "assets/sprites/nail_witch.png",
-      "width": 218,
-      "height": 178,
+      "width": 225,
+      "height": 203,
       "format": "RGBA PNG"
     },
     "portal_arch": {
@@ -260,12 +224,6 @@
       "height": 250,
       "format": "RGBA PNG"
     },
-    "stone_pillar": {
-      "file": "assets/sprites/stone_pillar.png",
-      "width": 50,
-      "height": 135,
-      "format": "RGBA PNG"
-    },
     "void_crate": {
       "file": "assets/sprites/void_crate.png",
       "width": 87,
@@ -280,8 +238,8 @@
     },
     "void_crystal": {
       "file": "assets/sprites/void_crystal.png",
-      "width": 50,
-      "height": 93,
+      "width": 135,
+      "height": 163,
       "format": "RGBA PNG"
     },
     "void_demon_phase1": {
@@ -308,34 +266,28 @@
       "height": 139,
       "format": "RGBA PNG"
     },
-    "voidling": {
-      "file": "assets/sprites/voidling.png",
-      "width": 130,
-      "height": 141,
-      "format": "RGBA PNG"
-    },
     "weapon_knife": {
       "file": "assets/sprites/weapon_knife.png",
-      "width": 80,
-      "height": 200,
+      "width": 100,
+      "height": 125,
       "format": "RGBA PNG"
     },
     "weapon_mace": {
       "file": "assets/sprites/weapon_mace.png",
-      "width": 85,
-      "height": 200,
+      "width": 100,
+      "height": 124,
       "format": "RGBA PNG"
     },
     "weapon_staff": {
       "file": "assets/sprites/weapon_staff.png",
-      "width": 80,
-      "height": 200,
+      "width": 101,
+      "height": 125,
       "format": "RGBA PNG"
     },
     "weapon_sword": {
       "file": "assets/sprites/weapon_sword.png",
-      "width": 90,
-      "height": 200,
+      "width": 86,
+      "height": 125,
       "format": "RGBA PNG"
     }
   }
