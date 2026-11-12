@@ -23,7 +23,7 @@ const regions={
  sanctum:{name:'THE VOID SANCTUM',sub:'The heart of the fracture',bg:'#100817',floor:'#1b1024',x:0,y:-1}
 };
 let state;
-function fresh(){const orbRegions=['center','oasis','factory'];return {player:{x:0,y:0,hp:100,maxHp:100,dir:0,moveDir:0,attack:0,attackCooldown:0,invuln:0,weapon:0,void:0},region:'center',inventory:[true,false,false,false],armor:[],weaponsUpgraded:false,orbTaken:false,orbSpawn:{region:orbRegions[Math.floor(Math.random()*orbRegions.length)],x:(Math.random()-.5)*420,y:(Math.random()-.5)*260},defeated:{eel:false,wraith:false,demon:false},crateLoot:0,elapsed:0,secretFound:false,enemies:[],crates:[],projectiles:[],particles:[],message:'',boss:null}}
+function fresh(){const orbRegions=['center','oasis','factory'];return {player:{x:0,y:0,hp:100,maxHp:100,dir:0,moveDir:0,attack:0,attackCooldown:0,invuln:0,weapon:0,void:0},region:'center',inventory:[true,false,false,false],armor:[],weaponsUpgraded:false,damageBonus:0,orbTaken:false,orbSpawn:{region:orbRegions[Math.floor(Math.random()*orbRegions.length)],x:(Math.random()-.5)*420,y:(Math.random()-.5)*260},defeated:{eel:false,wraith:false,demon:false},crateLoot:0,elapsed:0,secretFound:false,enemies:[],crates:[],projectiles:[],particles:[],message:'',boss:null}}
 state=fresh();
 const worldSeeds={center:12,oasis:24,factory:38,sanctum:52};
 function rand(seed){let x=Math.sin(seed*127.1+311.7)*43758.5453;return x-Math.floor(x)}
@@ -55,11 +55,11 @@ function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clea
 function switchWeapon(n){if(state.inventory[n]){player().weapon=n;updateHud();toast(weapons[n].name.toUpperCase())}}
 function updateBossHud(){
  const boss=state.enemies.find(e=>e.boss&&!e.dead);$('boss-panel').classList.toggle('hidden',!boss);
- if(boss){$('boss-name').textContent=boss.type==='eel'?'THE AMPHIBIAN WARDEN':boss.type==='wraith'?'THE NAIL-WITCH':'THE VOID DEMON';$('boss-fill').style.width=(Math.max(0,boss.hp)/boss.maxHp*100)+'%';$('boss-phase').textContent='PHASE '+(boss.phase===1?'I':boss.phase===2?'II':'III')}
+ if(boss){$('boss-name').textContent=boss.type==='eel'?'THE AMPHIBIAN WARDEN':boss.type==='wraith'?'THE VOID TEMPTRESS':'THE VOID DEMON';$('boss-fill').style.width=(Math.max(0,boss.hp)/boss.maxHp*100)+'%';$('boss-phase').textContent='PHASE '+(boss.phase===1?'I':boss.phase===2?'II':'III')}
 }
 function updateHud(){
  const p=player();$('hp-text').textContent=Math.ceil(p.hp)+' / '+p.maxHp;$('hp-fill').style.width=(p.hp/p.maxHp*100)+'%';$('xp-text').textContent=p.void;$('xp-fill').style.width=Math.min(100,p.void*10)+'%';
- $('weapon-name').textContent=weapons[p.weapon].name;$('weapon-level').textContent='DAMAGE '+(weapons[p.weapon].damage+(state.weaponsUpgraded?14:0));
+ $('weapon-name').textContent=weapons[p.weapon].name;$('weapon-level').textContent='DAMAGE '+(weapons[p.weapon].damage+(state.weaponsUpgraded?14:0)+(state.damageBonus||0));
  $('armor-count').textContent='ARMOR '+state.armor.length+'/3';document.querySelectorAll('.slot').forEach((b,i)=>{b.classList.toggle('active',i===p.weapon);b.style.opacity=state.inventory[i]?1:.28});
  $('region-title').textContent=regions[state.region].name;$('region-subtitle').textContent=regions[state.region].sub;
  updateBossHud();
@@ -68,10 +68,10 @@ function panel(title,html){overlayOpen=true;$('panel-title').textContent=title;$
 function closePanel(){overlayOpen=false;$('overlay').classList.add('hidden')}
 function inventoryPanel(){
  const weaponArt=['weapon_sword','weapon_knife','weapon_mace','weapon_staff'];
- let w=weapons.map((v,i)=>`<div class="item ${player().weapon===i?'equipped':''}"><img class="item-art" src="assets/sprites/${weaponArt[i]}.png" alt=""><b>${v.name}</b><p>${v.desc}<br>Damage: ${v.damage+(state.weaponsUpgraded?14:0)} · ${v.range} reach</p>${state.inventory[i]?`<button onclick="window.vwEquip(${i})">${player().weapon===i?'EQUIPPED':'EQUIP'}</button>`:'<small>NOT FOUND</small>'}</div>`).join('');
+ let w=weapons.map((v,i)=>`<div class="item ${player().weapon===i?'equipped':''}"><img class="item-art" src="assets/sprites/${weaponArt[i]}.png" alt=""><b>${v.name}</b><p>${v.desc}<br>Damage: ${v.damage+(state.weaponsUpgraded?14:0)+(state.damageBonus||0)} · ${v.range} reach</p>${state.inventory[i]?`<button onclick="window.vwEquip(${i})">${player().weapon===i?'EQUIPPED':'EQUIP'}</button>`:'<small>NOT FOUND</small>'}</div>`).join('');
  const armorNames=['Abyssal Mantle','Witchskin Cuirass','Demonplate'];
  let armor=state.armor.length?state.armor.map(a=>{let i=armorNames.indexOf(a);return `<div class="item equipped"><img class="item-art armor-art" src="assets/sprites/armor_set_0${Math.max(1,i+1)}.png" alt=""><b>${a}</b><p>Guardian armor · reduces incoming damage by 2</p><small>RECOVERED</small></div>`}).join(''):'<p class="panel-note">No armor pieces recovered yet. Defeat the region guardians.</p>';
- panel('INVENTORY',`<div class="stats">VITALITY ${Math.ceil(player().hp)}/${player().maxHp} · DAMAGE BONUS ${state.weaponsUpgraded?'+14':''}<br>ARMOR SETS: ${state.armor.length}/3 · VOID RESONANCE: ${player().void}/10</div><h3 class="eyebrow">WEAPON RACK</h3><div class="inventory-grid">${w}</div><h3 class="eyebrow" style="margin-top:22px">ARMOR EQUIPMENT</h3><div class="inventory-grid">${armor}</div><p class="panel-note">Press 1–4 to switch weapons. Armor pieces stack and reduce damage automatically. The Void Spiral awakens every weapon.</p>`);
+ panel('INVENTORY',`<div class="stats">VITALITY ${Math.ceil(player().hp)}/${player().maxHp} · DAMAGE BONUS +${(state.weaponsUpgraded?14:0)+(state.damageBonus||0)}<br>ARMOR SETS: ${state.armor.length}/3 · VOID RESONANCE: ${player().void}/10</div><h3 class="eyebrow">WEAPON RACK</h3><div class="inventory-grid">${w}</div><h3 class="eyebrow" style="margin-top:22px">ARMOR EQUIPMENT</h3><div class="inventory-grid">${armor}</div><p class="panel-note">Press 1–4 to switch weapons. Armor pieces stack and reduce damage automatically. The Void Spiral awakens every weapon.</p>`);
 }
 window.vwEquip=switchWeapon;
 function moveRegion(dir){
@@ -86,25 +86,26 @@ function moveRegion(dir){
  spawnRegion();updateHud();toast(state.region==='sanctum'?'THE VOID DEMON AWAKENS':regions[state.region].name);
 }
 function attack(){
- const p=player(),w=weapons[p.weapon];if(p.attackCooldown>0||!running)return;p.attack=.30;p.attackCooldown=w.speed;p.attackSerial=(p.attackSerial||0)+1;
- if(p.weapon===3){const speed=430;state.projectiles.push({x:p.x+Math.cos(p.dir)*22,y:p.y+Math.sin(p.dir)*22,vx:Math.cos(p.dir)*speed,vy:Math.sin(p.dir)*speed,life:.72,damage:w.damage+(state.weaponsUpgraded?14:0)});burst(p.x+Math.cos(p.dir)*25,p.y+Math.sin(p.dir)*25,'#c18aff',5);return;}
+ const p=player(),w=weapons[p.weapon];if(p.attackCooldown>0||!running)return;p.attack=.30;p.attackCooldown=w.speed;p.attackSerial=(p.attackSerial||0)+1;const damageBonus=(state.weaponsUpgraded?14:0)+(state.damageBonus||0);
+ if(p.weapon===3){const speed=430;state.projectiles.push({x:p.x+Math.cos(p.dir)*22,y:p.y+Math.sin(p.dir)*22,vx:Math.cos(p.dir)*speed,vy:Math.sin(p.dir)*speed,life:.72,damage:w.damage+damageBonus});burst(p.x+Math.cos(p.dir)*25,p.y+Math.sin(p.dir)*25,'#c18aff',5);return;}
  let hit=false;
- state.enemies.forEach(e=>{if(e.dead)return;let dx=e.x-p.x,dy=e.y-p.y,dist=Math.hypot(dx,dy),a=Math.atan2(dy,dx),diff=Math.atan2(Math.sin(a-p.dir),Math.cos(a-p.dir));const reach=w.range+(p.weapon===2?12:24),arc=w.arc+(p.weapon===2?.28:0);if(dist<reach&&Math.abs(diff)<arc){let dmg=w.damage+(state.weaponsUpgraded?14:0)+(p.void>=8?2:0);e.hp-=dmg;e.flash=.18;e.hitFlash=.18;hit=true;burst(e.x,e.y,p.weapon===2?'#d8a5ff':'#bb7cff',p.weapon===2?15:10);if(e.hp<=0)killEnemy(e)}});
- state.crates.forEach(c=>{if(c.dead||c.lastHit===p.attackSerial)return;if(Math.hypot(c.x-p.x,c.y-p.y)<(p.weapon===2?46:34)){c.lastHit=p.attackSerial;c.hp--;burst(c.x,c.y,'#8d54b9',5);if(c.hp<=0)breakCrate(c)}});
+ state.enemies.forEach(e=>{if(e.dead)return;let dx=e.x-p.x,dy=e.y-p.y,dist=Math.hypot(dx,dy),a=Math.atan2(dy,dx),diff=Math.atan2(Math.sin(a-p.dir),Math.cos(a-p.dir));const reach=w.range+(p.weapon===2?26:p.weapon===1?34:34),arc=w.arc+.34;if(dist<reach+(e.boss?28:16)&&Math.abs(diff)<arc){let dmg=w.damage+damageBonus+(p.void>=8?2:0);e.hp-=dmg;e.flash=.18;e.hitFlash=.18;hit=true;burst(e.x,e.y,p.weapon===2?'#d8a5ff':'#bb7cff',p.weapon===2?15:10);if(e.hp<=0)killEnemy(e)}});
+ state.crates.forEach(c=>{if(c.dead||c.lastHit===p.attackSerial)return;if(Math.hypot(c.x-p.x,c.y-p.y)<(p.weapon===2?94:84)){c.lastHit=p.attackSerial;c.hp--;burst(c.x,c.y,'#8d54b9',5);if(c.hp<=0)breakCrate(c)}});
  if(hit){p.void=Math.min(10,p.void+1);updateHud()}
 }
 function breakCrate(c){c.dead=true;burst(c.x,c.y,'#8d54b9',18);let r=Math.random();if(r<.38){let found=[0,1,2,3].filter(i=>!state.inventory[i]);if(found.length){let got=found[Math.floor(Math.random()*found.length)];state.inventory[got]=true;toast('CRATE LOOT: '+weapons[got].name.toUpperCase());updateHud()}else{potionDrop(c.x,c.y)}}else if(r<.72){potionDrop(c.x,c.y)}else{toast('THE CRATE WAS EMPTY')}}
-function potionDrop(){let p=player();p.hp=Math.min(p.maxHp,p.hp+20);toast('VITALITY SHARD · +20 VITALITY');updateHud()}
+function grantVitality(amount=15){const p=player();p.maxHp+=amount;p.hp=Math.min(p.maxHp,p.hp+amount);toast('VITALITY SHARD · MAX HEALTH +'+amount+' · HEALED +'+amount);updateHud()}
+function potionDrop(){grantVitality(15)}
 function killEnemy(e){
  e.dead=true;burst(e.x,e.y,'#9c5bda',20);
  if(e.boss){
   let armor=e.type==='eel'?'Abyssal Mantle':e.type==='wraith'?'Witchskin Cuirass':'Demonplate';
   if(e.type==='eel')state.defeated.eel=true;if(e.type==='wraith')state.defeated.wraith=true;if(e.type==='demon')state.defeated.demon=true;
-  if(!state.armor.includes(armor))state.armor.push(armor);player().maxHp+=12;player().hp=Math.min(player().maxHp,player().hp+30);
+  if(!state.armor.includes(armor))state.armor.push(armor);player().maxHp+=15;player().hp=Math.min(player().maxHp,player().hp+15);
   if(e.type==='demon'){toast('THE VOID DEMON FALLS — THE FRACTURE QUIETS');running=false;state.enemies.forEach(other=>{if(other!==e)other.dead=true});panel('THE FRACTURE QUIETS',`<p>The three guardians have fallen. The void releases its hold.</p><p class="panel-note">You have completed Void Walker.</p><button onclick="window.vwRestart()">PLAY AGAIN</button>`)}
   else toast(armor+' RECOVERED · NORTH GATE UNSEALED');
  }
- else if(Math.random()<.42){let loot=['Vitality Shard','Void Dust','Old Coin'][Math.floor(Math.random()*3)];if(loot==='Vitality Shard')player().hp=Math.min(player().maxHp,player().hp+12);else if(loot==='Void Dust')player().void=Math.min(10,player().void+2);toast('ENEMY DROP: '+loot.toUpperCase())}
+ else if(Math.random()<.42){let loot=['Vitality Shard','Void Dust','Old Coin'][Math.floor(Math.random()*3)];if(loot==='Vitality Shard')grantVitality(15);else if(loot==='Void Dust'){player().void=Math.min(10,player().void+2);state.damageBonus=(state.damageBonus||0)+3;toast('VOID DUST · DAMAGE +3')}else toast('ENEMY DROP: '+loot.toUpperCase());updateHud()}
  updateHud();
 }
 function burst(x,y,color,n){for(let i=0;i<n;i++)state.particles.push({x,y,vx:(Math.random()-.5)*180,vy:(Math.random()-.5)*180,life:.45+Math.random()*.35,color})}
@@ -113,7 +114,7 @@ function update(dt){
  if(!running||overlayOpen)return;const p=player();state.elapsed+=dt;
  p.attack=Math.max(0,p.attack-dt);p.attackCooldown=Math.max(0,p.attackCooldown-dt);p.invuln=Math.max(0,p.invuln-dt);
  let dx=(keys.ArrowRight||keys.d||touch.right?1:0)-(keys.ArrowLeft||keys.a||touch.left?1:0),dy=(keys.ArrowDown||keys.s||touch.down?1:0)-(keys.ArrowUp||keys.w||touch.up?1:0);
- if(dx||dy){let l=Math.hypot(dx,dy);dx/=l;dy/=l;p.x+=dx*165*dt;p.y+=dy*165*dt;p.moveDir=Math.atan2(dy,dx)}
+ if(dx||dy){let l=Math.hypot(dx,dy);dx/=l;dy/=l;p.x+=dx*165*dt;p.y+=dy*165*dt;p.moveDir=Math.atan2(dy,dx);p.facingUp=dy<-.35&&Math.abs(dy)>Math.abs(dx)}
  if(p.x<-330){p.x=-330;if(state.region==='center')moveRegion('left');else if(state.region==='factory')moveRegion('left')}
  if(p.x>330){p.x=330;if(state.region==='center')moveRegion('right');else if(state.region==='oasis')moveRegion('right')}
  if(p.y<-240){p.y=-240;if(state.region==='center')moveRegion('up')}
@@ -185,7 +186,7 @@ function draw(){
  ctx.save();ctx.translate(p.x,p.y);
  ctx.fillStyle='rgba(0,0,0,.62)';ctx.beginPath();ctx.ellipse(0,16,19,8,0,0,Math.PI*2);ctx.fill();
  const moving=!!(keys.w||keys.a||keys.s||keys.d||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||touch.up||touch.down||touch.left||touch.right);
- const heroFrame=p.invuln>0?['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]:moving?['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]:['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
+ const heroFrame=p.invuln>0?['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]:p.facingUp?'hero_idle_06':moving?['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]:['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
  const heroImg=spriteImages[heroFrame]||spriteImages.hero_idle_01;
  if(heroImg&&heroImg.complete&&heroImg.naturalWidth){
   ctx.save();if(Math.cos(p.dir)<0){ctx.scale(-1,1)}
@@ -217,13 +218,15 @@ document.addEventListener('keydown',e=>{keys[e.key]=true;if([' ','ArrowUp','Arro
 document.addEventListener('keyup',e=>keys[e.key]=false);
 function clearInputs(){Object.keys(keys).forEach(k=>keys[k]=false);Object.keys(touch).forEach(k=>touch[k]=false)}
 window.addEventListener('blur',clearInputs);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInputs()});
-canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const rect=canvas.getBoundingClientRect(),scale=Math.min(W/850,H/570,1.25);const wx=(e.clientX-rect.left-W/2)/scale+player().x,wy=(e.clientY-rect.top-H/2)/scale+player().y;player().dir=Math.atan2(wy-player().y,wx-player().x)});
+function aimFromPointer(e){const rect=canvas.getBoundingClientRect(),scale=Math.min(W/850,H/570,1.25);const dx=(e.clientX-rect.left-W/2)/scale,dy=(e.clientY-rect.top-H/2)/scale;player().dir=Math.atan2(dy,dx)}
+canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;aimFromPointer(e)});
+canvas.addEventListener('pointerdown',e=>{if(e.button!==0||overlayOpen||!running)return;e.preventDefault();aimFromPointer(e);attack()});
 
 document.querySelectorAll('[data-slot]').forEach(b=>b.addEventListener('click',()=>switchWeapon(+b.dataset.slot)));
 $('close-panel').onclick=closePanel;$('start-btn').onclick=()=>{$('start-screen').classList.add('hidden');running=true;toast('THE FRACTURE STIRS')};$('restart-run-btn').onclick=()=>{if(confirm('Restart this run from the beginning?'))restartRun()};
 $('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closePanel()});
 document.querySelectorAll('[data-move]').forEach(b=>{let k=b.dataset.move;b.addEventListener('pointerdown',e=>{e.preventDefault();touch[k]=true});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>touch[k]=false))});
 $('mobile-attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});$('mobile-inventory').onclick=inventoryPanel;
-$('hint').textContent='WASD / ARROWS MOVE · MOUSE AIM · SPACE / J ATTACK · I INVENTORY · 1–4 SWITCH WEAPON';
+$('hint').textContent='WASD / ARROWS MOVE · MOUSE AIM + CLICK ATTACK · SPACE / J ATTACK · I INVENTORY · 1–4 SWITCH WEAPON';
 updateHud();
 })();
