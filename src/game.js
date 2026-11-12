@@ -1,9 +1,27 @@
+
 (() => {
 'use strict';
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const spriteImages = {};
+const spriteBounds = {};
+const spriteLoadErrors = [];
 const spriteNames = ['hero_fullbody','hero_idle_01','hero_idle_02','hero_idle_03','hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04','hero_attack_01','hero_attack_02','hero_attack_03','hero_attack_04','hero_hurt_01','hero_hurt_02','amphibian_warden','amphibian_minion','nail_witch','void_demon_phase1','void_demon_phase2','black_eel','voidling','darkling_01','darkling_02','void_spiral_orb','void_crate','void_crate_broken','healing_potion','void_potion','void_crystal','portal_arch','dead_tree','stone_pillar','ground_tile_01','ground_tile_02','ground_tile_03','ground_tile_04','weapon_sword','weapon_knife','weapon_mace','weapon_staff','armor_set_01','armor_set_02','armor_set_03','armor_set_04'];
-spriteNames.forEach(name=>{const img=new Image();img.src='assets/sprites/'+name+'.png';spriteImages[name]=img;});
+spriteNames.forEach(name=>{
+ const img=new Image();
+ img.onload=()=>{
+  try{
+   const c=document.createElement('canvas'),g=c.getContext('2d',{willReadFrequently:true});
+   c.width=img.naturalWidth;c.height=img.naturalHeight;g.drawImage(img,0,0);
+   const pixels=g.getImageData(0,0,c.width,c.height).data;
+   let minX=c.width,minY=c.height,maxX=-1,maxY=-1;
+   for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){if(pixels[(y*c.width+x)*4+3]>12){if(x<minX)minX=x;if(y<minY)minY=y;if(x>maxX)maxX=x;if(y>maxY)maxY=y;}}
+   spriteBounds[name]=maxX>=minX?{x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1}:{x:0,y:0,w:c.width,h:c.height};
+  }catch(err){spriteBounds[name]={x:0,y:0,w:img.naturalWidth,h:img.naturalHeight};}
+ };
+ img.onerror=()=>{spriteLoadErrors.push(name);console.warn('[Void Walker] Missing sprite: assets/sprites/'+name+'.png');};
+ img.src='assets/sprites/'+name+'.png';spriteImages[name]=img;
+});
+window.addEventListener('load',()=>setTimeout(()=>{if(spriteLoadErrors.length)console.warn('[Void Walker] Missing sprites:',spriteLoadErrors.join(', '));},1200));
 
 const $=id=>document.getElementById(id);
 let W=0,H=0, last=0, running=false, toastTimer=0, overlayOpen=false;
@@ -40,7 +58,12 @@ function spawnRegion(){
 }
 spawnRegion();
 const player=()=>state.player;
-function drawSprite(name,x,y,w,h,alpha=1){const img=spriteImages[name];if(!img||!img.complete||!img.naturalWidth)return false;ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(img,x-w/2,y-h/2,w,h);ctx.restore();return true}
+function drawSprite(name,x,y,w,h,alpha=1){
+ const img=spriteImages[name];if(!img||!img.complete||!img.naturalWidth)return false;
+ const b=spriteBounds[name]||{x:0,y:0,w:img.naturalWidth,h:img.naturalHeight};
+ const fit=Math.min(w/b.w,h/b.h),dw=b.w*fit,dh=b.h*fit;
+ ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(img,b.x,b.y,b.w,b.h,x-dw/2,y-dh/2,dw,dh);ctx.restore();return true;
+}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2100)}
 function switchWeapon(n){if(state.inventory[n]){player().weapon=n;updateHud();toast(weapons[n].name.toUpperCase())}}
 function updateBossHud(){
@@ -108,12 +131,11 @@ function update(dt){
  if(p.x>330){p.x=330;if(state.region==='center')moveRegion('right');else if(state.region==='oasis')moveRegion('right')}
  if(p.y<-240){p.y=-240;if(state.region==='center')moveRegion('up')}
  if(p.y>240){p.y=240;if(state.region==='sanctum')moveRegion('down')}
- // Keep every region bounded; only the designed exits connect the map.
  p.x=Math.max(-330,Math.min(330,p.x));p.y=Math.max(-240,Math.min(240,p.y));
  if(state.orb&&!state.orbTaken&&Math.hypot(state.orb.x-p.x,state.orb.y-p.y)<30){state.orbTaken=true;state.weaponsUpgraded=true;p.void=10;burst(state.orb.x,state.orb.y,'#d7a4ff',34);state.orb=null;toast('VOID SPIRAL CLAIMED · ALL WEAPONS AWAKENED');updateHud()}
  state.enemies.forEach(e=>{if(e.dead)return;e.flash=Math.max(0,e.flash-dt);e.hitFlash=Math.max(0,e.hitFlash-dt);e.attack=Math.max(0,e.attack-dt);const meleeImpact=e.wind>0&&e.wind<=dt;const specialImpact=e.specialWind>0&&e.specialWind<=dt;e.wind=Math.max(0,e.wind-dt);e.specialWind=Math.max(0,e.specialWind-dt);let vx=p.x-e.x,vy=p.y-e.y,d=Math.max(1,Math.hypot(vx,vy)),isBoss=e.boss;e.dir=Math.atan2(vy,vx);
  if(isBoss&&e.hp<e.maxHp*.62)e.phase=2;if(isBoss&&e.hp<e.maxHp*.28)e.phase=3;
- const speed=isBoss?(e.type==='demon'?34:42)+e.phase*7:(e.type==='eel'?62:52);if(d> (isBoss?76:38)){e.x+=vx/d*speed*dt;e.y+=vy/d*speed*dt}
+ const speed=isBoss?(e.type==='demon'?34:42)+e.phase*7:(e.type==='eel'?62:52);if(d>(isBoss?76:38)){e.x+=vx/d*speed*dt;e.y+=vy/d*speed*dt}
  if(meleeImpact){if(Math.hypot(p.x-e.x,p.y-e.y)<(isBoss?78:58))damagePlayer(isBoss?15+e.phase*2:8,e.dir?Math.cos(e.dir)*8:0,e.dir?Math.sin(e.dir)*8:0)}
  if(d<(isBoss?78:48)&&e.attack<=0){e.attack=isBoss?1.15:1.45;e.wind=isBoss?.34:.25}
  if(isBoss){e.specialCooldown-=dt;if(specialImpact){let hit=false;if(e.type==='eel'){hit=d<175&&d>52}else if(e.type==='wraith'){let a=Math.atan2(p.y-e.y,p.x-e.x),diff=Math.atan2(Math.sin(a-e.specialDir),Math.cos(a-e.specialDir));hit=d<235&&Math.abs(diff)<.34}else{hit=d<190}if(hit)damagePlayer(e.type==='demon'?26:e.type==='wraith'?21:18,Math.cos(e.dir)*12,Math.sin(e.dir)*12);burst(e.x,e.y,e.type==='wraith'?'#e68bd5':'#c26aff',24);e.specialWind=0}
@@ -131,49 +153,43 @@ function draw(){
  ctx.save();ctx.translate(cx,cy);ctx.scale(scale,scale);ctx.translate(-camX,-camY);
  const reg=regions[state.region];ctx.fillStyle=reg.bg;ctx.fillRect(camX-700,camY-500,1400,1000);
  const floorTile=state.region==='oasis'?'ground_tile_02':state.region==='factory'?'ground_tile_03':state.region==='sanctum'?'ground_tile_04':'ground_tile_01';ctx.save();ctx.globalAlpha=.18;for(let gx=-600;gx<=600;gx+=120)for(let gy=-480;gy<=480;gy+=120)drawSprite(floorTile,Math.floor((camX+gx)/120)*120+60,Math.floor((camY+gy)/120)*120+60,120,120,.18);ctx.restore();
- // cracked ground texture
  for(let i=0;i<95;i++){let x=camX+(rand(i+worldSeeds[state.region])*1300-650),y=camY+(rand(i*2+worldSeeds[state.region])*900-450);ctx.strokeStyle=i%4===0?'rgba(166,91,210,.24)':'rgba(100,66,125,.12)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+rand(i+8)*22-11,y+rand(i+18)*28);ctx.lineTo(x+rand(i+20)*18,y+rand(i+21)*22);ctx.stroke()}
- // distant black fissures
- for(let i=0;i<8;i++){let x=camX+(i-4)*145+Math.sin(i)*30,y=camY+Math.cos(i*4)*220;ctx.fillStyle='#08050d';ctx.beginPath();ctx.ellipse(x,y,38+rand(i)*25,18+rand(i+2)*14,rand(i)*2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(132,60,177,.45)';ctx.lineWidth=3;ctx.stroke()}
- // region landmarks
+ for(let i=0;i<7;i++){
+  const x=camX+(i-3)*178+Math.sin(i*2)*28,y=camY+Math.cos(i*3.7)*215;
+  const len=34+rand(i+41)*48,lean=(rand(i+19)-.5)*22;
+  ctx.save();ctx.translate(x,y);ctx.strokeStyle='rgba(126,86,170,.25)';ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-lean,-len);ctx.lineTo(lean*.35,-len*.35);ctx.lineTo(-lean*.5,4);ctx.lineTo(lean,len);ctx.stroke();
+  ctx.strokeStyle='rgba(194,119,235,.22)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-lean*.35,-len*.55);ctx.lineTo(-lean*1.1,-len*.8);ctx.moveTo(0,0);ctx.lineTo(lean*1.4,len*.2);ctx.stroke();ctx.restore();
+ }
  if(state.region==='oasis'){ctx.fillStyle='#160d29';ctx.beginPath();ctx.ellipse(0,0,240,125,-.1,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#9b57cb';ctx.lineWidth=4;ctx.stroke();for(let i=0;i<22;i++){ctx.strokeStyle='rgba(177,103,255,.24)';ctx.beginPath();ctx.arc((rand(i+5)-.5)*380,(rand(i+9)-.5)*190,8+rand(i)*22,0,Math.PI*2);ctx.stroke()}}
  if(state.region==='factory'){for(let i=0;i<5;i++){let x=-260+i*130;ctx.fillStyle='#100c14';ctx.fillRect(x,-190,68,130);ctx.strokeStyle='#684276';ctx.strokeRect(x,-190,68,130);ctx.fillStyle='#43294f';ctx.fillRect(x+10,-170,8,70)}}
  if(state.region==='sanctum'){ctx.strokeStyle='rgba(171,91,218,.5)';ctx.lineWidth=6;ctx.beginPath();ctx.arc(0,-80,170,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#08050e';ctx.beginPath();ctx.ellipse(0,-80,120,75,0,0,Math.PI*2);ctx.fill();drawSprite('portal_arch',0,-205,76,154)}
- // Existing environment props add silhouette and scale to each region.
  if(state.region==='oasis'){[[-285,-150],[275,-135],[-300,175],[305,165]].forEach(([x,y])=>drawSprite('dead_tree',x,y,48,82,.9));}
  if(state.region==='factory'){[-285,-130,285,-130,-285,175,285,175].forEach((v,i,a)=>{if(i%2===0)drawSprite('stone_pillar',v,a[i+1],38,76,.85)});}
  if(state.region==='center'){[[-260,-170],[260,-165],[-285,185],[290,180]].forEach(([x,y])=>drawSprite('void_crystal',x,y,20,48,.85));}
  if(state.region==='sanctum'){[[-240,-25],[240,-25],[-210,190],[210,190]].forEach(([x,y])=>drawSprite('void_crystal',x,y,22,52,.8));}
- // Region-specific environmental atmosphere.
  if(state.region==='oasis'){ctx.save();ctx.globalAlpha=.22;for(let i=0;i<16;i++){let x=Math.sin(state.elapsed*.35+i*2.1)*210,y=Math.cos(state.elapsed*.28+i*1.7)*100;ctx.strokeStyle='#a86cff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y,30+i%4*13,7+i%3*4,Math.sin(state.elapsed+i)*.2,0,Math.PI*2);ctx.stroke()}ctx.restore()}
  if(state.region==='factory'){ctx.save();for(let i=0;i<6;i++){let x=-300+i*120;ctx.fillStyle='rgba(5,4,8,.5)';ctx.fillRect(x,-220,72,22);ctx.fillStyle='rgba(165,82,190,.35)';ctx.fillRect(x+8,-215,5,12);ctx.fillRect(x+20,-215,5,12)}ctx.strokeStyle='rgba(162,75,190,.28)';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-330,40);ctx.lineTo(-130,10);ctx.lineTo(15,75);ctx.lineTo(330,35);ctx.stroke();ctx.restore()}
  if(state.region==='center'){ctx.save();ctx.strokeStyle='rgba(160,82,210,.22)';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-340,210);ctx.lineTo(-120,110);ctx.lineTo(20,155);ctx.lineTo(190,35);ctx.lineTo(340,70);ctx.stroke();ctx.restore()}
- // crates
- state.crates.forEach(c=>{if(c.dead){drawSprite('void_crate_broken',c.x,c.y,34,34,.8);return}ctx.save();ctx.translate(c.x,c.y);ctx.shadowBlur=c.glow?18:0;ctx.shadowColor='#a45dff';if(!drawSprite('void_crate',0,0,38,42)){ctx.fillStyle='#0a080f';ctx.fillRect(-13,-12,26,22);ctx.strokeStyle=c.glow?'#b77aff':'#594365';ctx.strokeRect(-13,-12,26,22)}if(c.glow){ctx.strokeStyle='rgba(208,166,255,'+(.45+Math.sin(state.elapsed*4)*.3)+')';ctx.lineWidth=2;ctx.strokeRect(-21, -23,42,46)}ctx.restore()});
- // The rare spiral orb is a world pickup, placed once per run in one region.
+ state.crates.forEach(c=>{if(c.dead){drawSprite('void_crate_broken',c.x,c.y,54,54,.85);return}ctx.save();ctx.translate(c.x,c.y);ctx.shadowBlur=c.glow?18:0;ctx.shadowColor='#a45dff';if(!drawSprite('void_crate',0,0,54,58)){ctx.fillStyle='#21152b';ctx.fillRect(-20,-19,40,38);ctx.strokeStyle=c.glow?'#c18aff':'#76518c';ctx.lineWidth=3;ctx.strokeRect(-20,-19,40,38);ctx.beginPath();ctx.moveTo(-20,-19);ctx.lineTo(20,19);ctx.moveTo(20,-19);ctx.lineTo(-20,19);ctx.stroke();ctx.fillStyle='#0b0710';ctx.fillRect(-5,-5,10,10)}if(c.glow){ctx.strokeStyle='rgba(208,166,255,'+(.45+Math.sin(state.elapsed*4)*.3)+')';ctx.lineWidth=2;ctx.strokeRect(-21,-23,42,46)}ctx.restore()});
  if(state.orb&&!state.orbTaken){ctx.save();ctx.translate(state.orb.x,state.orb.y);ctx.shadowBlur=28;ctx.shadowColor='#c27aff';ctx.globalAlpha=.78+Math.sin(state.elapsed*4)*.18;drawSprite('void_spiral_orb',0,0,42,48);ctx.strokeStyle='rgba(214,168,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,27+Math.sin(state.elapsed*3)*4,0,Math.PI*2);ctx.stroke();ctx.restore()}
- // Enemies use their matching existing illustrated sprite crops.
- state.enemies.forEach(e=>{if(e.dead)return;ctx.save();const bob=Math.sin(state.elapsed*(e.boss?2.2:3.4)+e.x*.03)* (e.boss?3:2);ctx.translate(e.x,e.y+bob);ctx.shadowBlur=e.boss?24:12;ctx.shadowColor=e.flash?'#fff':'#9b39d0';
+ state.enemies.forEach(e=>{if(e.dead)return;ctx.save();const bob=Math.sin(state.elapsed*(e.boss?2.2:3.4)+e.x*.03)*(e.boss?3:2);ctx.translate(e.x,e.y+bob);ctx.shadowBlur=e.boss?24:12;ctx.shadowColor=e.flash?'#fff':'#9b39d0';
  const spriteKey=e.type==='eel'?'amphibian_warden':e.type==='wraith'?'nail_witch':e.type==='demon'?(e.phase>=2?'void_demon_phase2':'void_demon_phase1'):state.region==='oasis'?(e.type==='minion'?(e.variant?'black_eel':'amphibian_minion'):'black_eel'):state.region==='factory'?(e.variant?'darkling_02':'darkling_01'):'voidling';
- const dims=e.type==='demon'?[156,154]:e.type==='wraith'?[96,128]:e.type==='eel'?[104,104]:state.region==='factory'?[54,72]:state.region==='oasis'?[48,58]:[48,42];
+ const dims=e.type==='demon'?[210,210]:e.type==='wraith'?[150,176]:e.type==='eel'?[154,154]:state.region==='factory'?[92,112]:state.region==='oasis'?[88,100]:[82,76];
  if(!drawSprite(spriteKey,0,e.boss?-5:0,dims[0],dims[1])){ctx.fillStyle='#160d20';ctx.beginPath();ctx.arc(0,0,e.boss?28:13,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#9b45d1';ctx.stroke()}
  if(e.flash){ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill()}
  if(e.wind>0){ctx.strokeStyle='rgba(255,104,157,'+(.35+.45*(e.wind/(e.boss?.34:.25)))+')';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,Math.max(12,e.boss?43:24),e.boss?44:22,7,0,0,Math.PI*2);ctx.stroke()}
- if(e.specialWind>0){ctx.strokeStyle=e.type==='wraith'?'rgba(255,120,205,.9)':'rgba(212,111,255,.8)';ctx.lineWidth=4;if(e.type==='wraith'){ctx.rotate(e.specialDir||e.dir);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(250,0);ctx.stroke()}else{ctx.beginPath();ctx.arc(0,0,190*(1-e.specialWind/1.05),0,Math.PI*2);ctx.stroke()}} if(e.boss){ctx.fillStyle='#09050e';ctx.fillRect(-30,-56,60,5);ctx.fillStyle='#ce4eaa';ctx.fillRect(-30,-56,60*e.hp/e.maxHp,5)}
+ if(e.specialWind>0){ctx.strokeStyle=e.type==='wraith'?'rgba(255,120,205,.9)':'rgba(212,111,255,.8)';ctx.lineWidth=4;if(e.type==='wraith'){ctx.rotate(e.specialDir||e.dir);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(250,0);ctx.stroke()}else{ctx.beginPath();ctx.arc(0,0,190*(1-e.specialWind/1.05),0,Math.PI*2);ctx.stroke()}}if(e.boss){ctx.fillStyle='#09050e';ctx.fillRect(-30,-56,60,5);ctx.fillStyle='#ce4eaa';ctx.fillRect(-30,-56,60*e.hp/e.maxHp,5)}
  ctx.restore()});
- // player shadow and angled body
  ctx.save();ctx.translate(p.x,p.y);ctx.fillStyle='rgba(0,0,0,.6)';ctx.beginPath();ctx.ellipse(0,13,18,8,0,0,Math.PI*2);ctx.fill();
  ctx.rotate(p.dir);if(p.attack>0&&p.weapon!==3){ctx.strokeStyle=p.weapon===2?'#e1bdff':'#d9a4ff';ctx.shadowBlur=p.weapon===2?28:20;ctx.shadowColor='#b66aff';ctx.lineWidth=p.weapon===2?8:5;ctx.beginPath();if(p.weapon===1){ctx.moveTo(8,-8);ctx.lineTo(46,0);ctx.lineTo(8,8)}else{ctx.arc(p.weapon===2?18:24,0,p.weapon===2?45:35,p.weapon===2?-.72:-.9,p.weapon===2?.72:.9)}ctx.stroke();ctx.strokeStyle='#fff0ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(24,0,p.weapon===2?45:35,-.75,.75);ctx.stroke()}
- // Illustrated heroine sprite extracted from the approved concept atlas.
  const moving=!!(keys.w||keys.a||keys.s||keys.d||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||touch.up||touch.down||touch.left||touch.right);
  const heroFrame=p.invuln>0?['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]:p.attack>0?(p.weapon===0?'hero_attack_01':p.weapon===1?'hero_attack_02':p.weapon===2?'hero_attack_03':'hero_attack_04'):moving?['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*9)%4]:['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
  const heroImg=spriteImages[heroFrame]||spriteImages.hero_fullbody;
- if(heroImg&&heroImg.complete&&heroImg.naturalWidth){ctx.save();ctx.rotate(-p.dir+Math.PI/2);const attacking=p.attack>0;const dw=attacking?66:54,dh=attacking?74:88;ctx.drawImage(heroImg,-dw/2,-dh/2-3,dw,dh);ctx.restore();}
+ if(heroImg&&heroImg.complete&&heroImg.naturalWidth){ctx.save();ctx.rotate(-p.dir+Math.PI/2);const attacking=p.attack>0;const dw=attacking?96:88,dh=attacking?112:124;drawSprite(heroFrame,0,-3,dw,dh);ctx.restore();}
  else {
   ctx.fillStyle='#0a080f';ctx.beginPath();ctx.ellipse(0,3,12,17,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#25142f';ctx.beginPath();ctx.moveTo(-10,-3);ctx.lineTo(0,-19);ctx.lineTo(13,-2);ctx.lineTo(10,15);ctx.lineTo(-10,15);ctx.fill();ctx.strokeStyle='#80549e';ctx.lineWidth=1.5;ctx.stroke();
   ctx.fillStyle='#07060b';ctx.beginPath();ctx.ellipse(0,-15,12,15,0,0,Math.PI*2);ctx.fill();ctx.fillRect(-12,-17,-3,28);ctx.fillRect(9,-18,4,28);ctx.fillStyle='#d5b9d6';ctx.beginPath();ctx.ellipse(0,-17,6,7,0,0,Math.PI*2);ctx.fill();
  }
- // Equipped weapon uses its existing illustrated asset.
  const weaponSprite=['weapon_sword','weapon_knife','weapon_mace','weapon_staff'][p.weapon];
  if(!drawSprite(weaponSprite,25,0,p.weapon===1?15:p.weapon===2?20:17,p.weapon===3?34:29)){
   ctx.strokeStyle=state.weaponsUpgraded?'#b983ff':'#b7a2c8';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(27,0);ctx.stroke();
@@ -182,7 +198,6 @@ function draw(){
  state.projectiles.forEach(b=>{ctx.save();ctx.shadowBlur=18;ctx.shadowColor='#c58aff';ctx.fillStyle='#e2c5ff';ctx.beginPath();ctx.arc(b.x,b.y,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(180,110,255,.7)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(b.x-b.vx*.035,b.y-b.vy*.035);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore()});
  state.particles.forEach(q=>{ctx.globalAlpha=Math.max(0,q.life);ctx.fillStyle=q.color;ctx.fillRect(q.x,q.y,3,3);ctx.globalAlpha=1});
  ctx.restore();
- // vignette
  let grad=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.2,W/2,H/2,Math.max(W,H)*.7);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(1,'rgba(0,0,0,.58)');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
 }
 function loop(t){let dt=Math.min((t-last)/1000,.04);last=t;update(dt);draw();requestAnimationFrame(loop)}
