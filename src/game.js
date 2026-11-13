@@ -128,7 +128,7 @@ function update(dt){
  if(meleeImpact){if(Math.hypot(p.x-e.x,p.y-e.y)<(isBoss?78:58))damagePlayer(isBoss?15+e.phase*2:8,e.dir?Math.cos(e.dir)*8:0,e.dir?Math.sin(e.dir)*8:0)}
  if(d<(isBoss?78:48)&&e.attack<=0){e.attack=isBoss?1.15:1.45;e.wind=isBoss?.34:.25}
  if(isBoss){e.specialCooldown-=dt;if(specialImpact){let hit=false;if(e.type==='eel'){hit=d<175&&d>52}else if(e.type==='wraith'){let a=Math.atan2(p.y-e.y,p.x-e.x),diff=Math.atan2(Math.sin(a-e.specialDir),Math.cos(a-e.specialDir));hit=d<235&&Math.abs(diff)<.34}else{hit=d<190}if(hit)damagePlayer(e.type==='demon'?26:e.type==='wraith'?21:18,Math.cos(e.dir)*12,Math.sin(e.dir)*12);burst(e.x,e.y,e.type==='wraith'?'#e68bd5':'#c26aff',24);e.specialWind=0}
- if(e.specialCooldown<=0&&d<(e.type==='wraith'?260:235)){e.specialWind=e.type==='wraith'?.95:1.05;e.specialDir=e.dir;e.specialCooldown=e.phase===3?3.0:4.4;e.special=1;}}
+ if(e.specialCooldown<=0&&d<(e.type==='wraith'?260:235)){e.specialWind = e.type === 'wraith' ? 0.95 : 1.05;e.specialDir=e.dir;e.specialCooldown=e.phase===3?3.0:4.4;e.special=1;}}
  });
  state.projectiles=state.projectiles.filter(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;let hit=false;for(const e of state.enemies){if(!e.dead&&Math.hypot(e.x-b.x,e.y-b.y)<(e.boss?38:24)){e.hp-=b.damage;e.flash=.18;burst(e.x,e.y,'#c18aff',12);if(e.hp<=0)killEnemy(e);hit=true;break}}if(hit){p.void=Math.min(10,p.void+1);updateHud()}if(hit||b.life<=0)return false;return true});
  state.particles=state.particles.filter(q=>{q.x+=q.vx*dt;q.y+=q.vy*dt;q.life-=dt;return q.life>0});
@@ -178,7 +178,7 @@ function draw(){
  const dims=e.type==='demon'?[280,224]:e.type==='wraith'?[142,158]:e.type==='eel'?[150,145]:state.region==='factory'?[82,112]:state.region==='oasis'?[82,92]:[72,78];
  if(!drawSprite(spriteKey,0,e.boss?-5:0,dims[0],dims[1])){ctx.fillStyle='#160d20';ctx.beginPath();ctx.arc(0,0,e.boss?28:13,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#9b45d1';ctx.stroke()}
  if(e.flash){ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.arc(0,0,22,0,Math.PI*2);ctx.fill()}
- if(e.wind>0){ctx.strokeStyle='rgba(255,104,157,'+(.35+.45*(e.wind/(e.boss?.34:.25)))+')';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,Math.max(12,e.boss?43:24),e.boss?44:22,7,0,0,Math.PI*2);ctx.stroke()}
+ if(e.wind>0){ctx.strokeStyle='rgba(255,104,157,'+(.35+.45*(e.wind/(e.boss ? 0.34 : 0.25)))+')';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,Math.max(12,e.boss?43:24),e.boss?44:22,7,0,0,Math.PI*2);ctx.stroke()}
  if(e.specialWind>0){ctx.strokeStyle=e.type==='wraith'?'rgba(255,120,205,.9)':'rgba(212,111,255,.8)';ctx.lineWidth=4;if(e.type==='wraith'){ctx.rotate(e.specialDir||e.dir);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(250,0);ctx.stroke()}else{ctx.beginPath();ctx.arc(0,0,190*(1-e.specialWind/1.05),0,Math.PI*2);ctx.stroke()}} if(e.boss){const bw=e.type==='demon'?112:76;ctx.fillStyle='#09050e';ctx.fillRect(-bw/2,-(e.type==='demon'?112:70),bw,7);ctx.fillStyle='#ce4eaa';ctx.fillRect(-bw/2,-(e.type==='demon'?112:70),bw*Math.max(0,e.hp/e.maxHp),7)}
  ctx.restore()});
  // Heroine remains upright; only her facing direction flips. Aiming rotates the weapon,
