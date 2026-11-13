@@ -177,8 +177,8 @@ function attack(){
   if(hit){p.void=Math.min(10,p.void+1);updateHud()}
 }
 function breakCrate(c){c.dead=true;sfxPickup();state.score+=25;burst(c.x,c.y,'#8d54b9',18);let r=Math.random();if(r<.38){let found=[0,1,2,3].filter(i=>!state.inventory[i]);if(found.length){let got=found[Math.floor(Math.random()*found.length)];state.inventory[got]=true;toast('CRATE LOOT: '+weapons[got].name.toUpperCase());updateHud()}else{potionDrop(c.x,c.y)}}else if(r<.72){potionDrop(c.x,c.y)}else{toast('THE CRATE WAS EMPTY')}}
-function grantVitality(amount=15){const p=player();p.maxHp+=amount;p.hp=Math.min(p.maxHp,p.hp+amount);toast('VITALITY SHARD · MAX HEALTH +'+amount+' · HEALED +'+amount);updateHud()}
-function potionDrop(){grantVitality(15)}
+function grantVitality(amount=4){const p=player();p.maxHp+=amount;p.hp=Math.min(p.maxHp,p.hp+amount);toast('VITALITY SHARD · MAX HEALTH +'+amount+' · HEALED +'+amount);updateHud()}
+function potionDrop(){grantVitality(10)}
 function killEnemy(e){
   e.dead=true;burst(e.x,e.y,'#9c5bda',20);state.score+=e.boss?400:80;
   if(e.boss){
