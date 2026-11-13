@@ -4,7 +4,23 @@ const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const spriteImages = {};
 const spriteNames = ['region_bg_center','region_bg_oasis','region_bg_factory','region_bg_sanctum','hero_idle_01','hero_idle_02','hero_idle_03','hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04','hero_attack_01','hero_attack_02','hero_attack_03','hero_attack_04','hero_hurt_01','hero_hurt_02','amphibian_warden','amphibian_minion','nail_witch','void_demon_phase1','void_demon_phase2','black_eel','darkling_01','darkling_02','void_spiral_orb','void_crate','void_crate_broken','healing_potion','void_potion','void_crystal','portal_arch','weapon_sword','weapon_knife','weapon_mace','weapon_staff','armor_set_01','armor_set_02','armor_set_03','armor_set_04'];
 spriteNames.forEach(name=>{const img=new Image();img.src='assets/sprites/'+name+'.png';spriteImages[name]=img;});
-
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playTone(freq, duration, type = 'square', vol = 0.08) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+function sfxAttack() { playTone(220, 0.12, 'sawtooth', 0.07); playTone(110, 0.18, 'square', 0.04); }
+function sfxHit()    { playTone(80, 0.15, 'square', 0.1); }
+function sfxPickup() { playTone(440, 0.08, 'sine', 0.06); playTone(660, 0.12, 'sine', 0.04); }
 const $=id=>document.getElementById(id);
 let W=0,H=0, last=0, running=false, toastTimer=0, overlayOpen=false;
 function resize(){const d=Math.min(devicePixelRatio||1,2);W=canvas.clientWidth;H=canvas.clientHeight;canvas.width=Math.floor(W*d);canvas.height=Math.floor(H*d);ctx.setTransform(d,0,0,d,0,0)}
@@ -186,7 +202,7 @@ function draw(){
  ctx.save();ctx.translate(p.x,p.y);
  ctx.fillStyle='rgba(0,0,0,.62)';ctx.beginPath();ctx.ellipse(0,16,19,8,0,0,Math.PI*2);ctx.fill();
  const moving=!!(keys.w||keys.a||keys.s||keys.d||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||touch.up||touch.down||touch.left||touch.right);
- const heroFrame=p.invuln>0?['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]:p.facingUp?'hero_idle_06':moving?['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]:['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
+const heroFrame=p.attack>0?['hero_attack_01','hero_attack_02','hero_attack_03','hero_attack_04'][Math.min(3,Math.floor((0.30-p.attack)/0.30*4))]:p.invuln>0?['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]:p.facingUp?'hero_idle_06':moving?['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]:['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
  const heroImg=spriteImages[heroFrame]||spriteImages.hero_idle_01;
  if(heroImg&&heroImg.complete&&heroImg.naturalWidth){
   ctx.save();if(Math.cos(p.dir)<0){ctx.scale(-1,1)}
