@@ -186,11 +186,26 @@ function draw(){
  ctx.save();ctx.translate(p.x,p.y);
  ctx.fillStyle='rgba(0,0,0,.62)';ctx.beginPath();ctx.ellipse(0,16,19,8,0,0,Math.PI*2);ctx.fill();
  const moving=!!(keys.w||keys.a||keys.s||keys.d||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||touch.up||touch.down||touch.left||touch.right);
- const heroFrame=p.invuln>0?['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]:p.facingUp?'hero_idle_06':moving?['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]:['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
+ // Use the dedicated attack poses during the active strike window. The previous
+ // renderer never selected hero_attack_* so attacks only showed a generic weapon arc.
+ const attackFrameIndex = p.attack > 0
+   ? Math.min(3, Math.floor(((0.30 - p.attack) / 0.30) * 4))
+   : 0;
+ const heroFrame = p.invuln > 0
+   ? ['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]
+   : (p.attack > 0 && p.weapon !== 3)
+     ? ['hero_attack_01','hero_attack_02','hero_attack_03','hero_attack_04'][attackFrameIndex]
+     : p.facingUp
+       ? 'hero_idle_06'
+       : moving
+         ? ['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]
+         : ['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
  const heroImg=spriteImages[heroFrame]||spriteImages.hero_idle_01;
  if(heroImg&&heroImg.complete&&heroImg.naturalWidth){
   ctx.save();if(Math.cos(p.dir)<0){ctx.scale(-1,1)}
-  const attacking=p.attack>0,dw=attacking?74:68,dh=attacking?110:108;
+  const attacking=p.attack>0 && p.weapon!==3;
+  const attackPose=attacking && heroFrame.startsWith('hero_attack_');
+  const dw=attackPose?94:68,dh=attackPose?108:108;
   ctx.imageSmoothingEnabled=true;ctx.drawImage(heroImg,-dw/2,-dh/2-3,dw,dh);ctx.restore();
  } else {
   ctx.fillStyle='#0a080f';ctx.beginPath();ctx.ellipse(0,3,12,17,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#25142f';ctx.beginPath();ctx.moveTo(-10,-3);ctx.lineTo(0,-19);ctx.lineTo(13,-2);ctx.lineTo(10,15);ctx.lineTo(-10,15);ctx.fill();ctx.strokeStyle='#80549e';ctx.lineWidth=1.5;ctx.stroke();
@@ -199,7 +214,7 @@ function draw(){
  // Weapon is a separate, aim-rotated layer so the heroine's body stays vertical.
  ctx.save();ctx.translate(0,-9);ctx.rotate(p.dir);
  const weaponSprite=['weapon_sword','weapon_knife','weapon_mace','weapon_staff'][p.weapon];
- if(!drawSprite(weaponSprite,25,0,p.weapon===1?15:p.weapon===2?20:17,p.weapon===3?34:29)){
+ if(!drawSprite(weaponSprite,attackPose?29:25,0,(p.weapon===1?15:p.weapon===2?20:17)*(attackPose?.82:1),(p.weapon===3?34:29)*(attackPose?.82:1))){
   ctx.strokeStyle=state.weaponsUpgraded?'#b983ff':'#b7a2c8';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(27,0);ctx.stroke();
  }
  if(p.attack>0&&p.weapon!==3){ctx.strokeStyle=p.weapon===2?'#e1bdff':'#d9a4ff';ctx.shadowBlur=p.weapon===2?22:15;ctx.shadowColor='#b66aff';ctx.lineWidth=p.weapon===2?6:4;ctx.beginPath();ctx.arc(p.weapon===2?18:24,0,p.weapon===2?45:35,p.weapon===2?-.72:-.9,p.weapon===2?.72:.9);ctx.stroke()}
