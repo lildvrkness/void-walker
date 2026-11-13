@@ -23,7 +23,7 @@ const regions={
  sanctum:{name:'THE VOID SANCTUM',sub:'The heart of the fracture',bg:'#100817',floor:'#1b1024',x:0,y:-1}
 };
 let state;
-function fresh(){const orbRegions=['center','oasis','factory'];return {player:{x:0,y:0,hp:100,maxHp:100,dir:0,moveDir:0,attack:0,attackCooldown:0,invuln:0,weapon:0,void:0},region:'center',inventory:[true,false,false,false],armor:[],weaponsUpgraded:false,damageBonus:0,orbTaken:false,orbSpawn:{region:orbRegions[Math.floor(Math.random()*orbRegions.length)],x:(Math.random()-.5)*420,y:(Math.random()-.5)*260},defeated:{eel:false,wraith:false,demon:false},crateLoot:0,elapsed:0,secretFound:false,enemies:[],crates:[],projectiles:[],particles:[],message:'',boss:null}}
+function fresh(){const orbRegions=['center','oasis','factory'];return {player:{x:0,y:0,hp:100,maxHp:100,dir:0,attack:0,attackCooldown:0,invuln:0,weapon:0,void:0},region:'center',inventory:[true,false,false,false],armor:[],weaponsUpgraded:false,orbTaken:false,orbSpawn:{region:orbRegions[Math.floor(Math.random()*orbRegions.length)],x:(Math.random()-.5)*420,y:(Math.random()-.5)*260},defeated:{eel:false,wraith:false,demon:false},crateLoot:0,elapsed:0,secretFound:false,enemies:[],crates:[],projectiles:[],particles:[],message:'',boss:null}}
 state=fresh();
 const worldSeeds={center:12,oasis:24,factory:38,sanctum:52};
 function rand(seed){let x=Math.sin(seed*127.1+311.7)*43758.5453;return x-Math.floor(x)}
@@ -55,11 +55,11 @@ function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clea
 function switchWeapon(n){if(state.inventory[n]){player().weapon=n;updateHud();toast(weapons[n].name.toUpperCase())}}
 function updateBossHud(){
  const boss=state.enemies.find(e=>e.boss&&!e.dead);$('boss-panel').classList.toggle('hidden',!boss);
- if(boss){$('boss-name').textContent=boss.type==='eel'?'THE AMPHIBIAN WARDEN':boss.type==='wraith'?'THE VOID TEMPTRESS':'THE VOID DEMON';$('boss-fill').style.width=(Math.max(0,boss.hp)/boss.maxHp*100)+'%';$('boss-phase').textContent='PHASE '+(boss.phase===1?'I':boss.phase===2?'II':'III')}
+ if(boss){$('boss-name').textContent=boss.type==='eel'?'THE AMPHIBIAN WARDEN':boss.type==='wraith'?'THE NAIL-WITCH':'THE VOID DEMON';$('boss-fill').style.width=(Math.max(0,boss.hp)/boss.maxHp*100)+'%';$('boss-phase').textContent='PHASE '+(boss.phase===1?'I':boss.phase===2?'II':'III')}
 }
 function updateHud(){
  const p=player();$('hp-text').textContent=Math.ceil(p.hp)+' / '+p.maxHp;$('hp-fill').style.width=(p.hp/p.maxHp*100)+'%';$('xp-text').textContent=p.void;$('xp-fill').style.width=Math.min(100,p.void*10)+'%';
- $('weapon-name').textContent=weapons[p.weapon].name;$('weapon-level').textContent='DAMAGE '+(weapons[p.weapon].damage+(state.weaponsUpgraded?14:0)+(state.damageBonus||0));
+ $('weapon-name').textContent=weapons[p.weapon].name;$('weapon-level').textContent='DAMAGE '+(weapons[p.weapon].damage+(state.weaponsUpgraded?14:0));
  $('armor-count').textContent='ARMOR '+state.armor.length+'/3';document.querySelectorAll('.slot').forEach((b,i)=>{b.classList.toggle('active',i===p.weapon);b.style.opacity=state.inventory[i]?1:.28});
  $('region-title').textContent=regions[state.region].name;$('region-subtitle').textContent=regions[state.region].sub;
  updateBossHud();
@@ -68,10 +68,10 @@ function panel(title,html){overlayOpen=true;$('panel-title').textContent=title;$
 function closePanel(){overlayOpen=false;$('overlay').classList.add('hidden')}
 function inventoryPanel(){
  const weaponArt=['weapon_sword','weapon_knife','weapon_mace','weapon_staff'];
- let w=weapons.map((v,i)=>`<div class="item ${player().weapon===i?'equipped':''}"><img class="item-art" src="assets/sprites/${weaponArt[i]}.png" alt=""><b>${v.name}</b><p>${v.desc}<br>Damage: ${v.damage+(state.weaponsUpgraded?14:0)+(state.damageBonus||0)} · ${v.range} reach</p>${state.inventory[i]?`<button onclick="window.vwEquip(${i})">${player().weapon===i?'EQUIPPED':'EQUIP'}</button>`:'<small>NOT FOUND</small>'}</div>`).join('');
+ let w=weapons.map((v,i)=>`<div class="item ${player().weapon===i?'equipped':''}"><img class="item-art" src="assets/sprites/${weaponArt[i]}.png" alt=""><b>${v.name}</b><p>${v.desc}<br>Damage: ${v.damage+(state.weaponsUpgraded?14:0)} · ${v.range} reach</p>${state.inventory[i]?`<button onclick="window.vwEquip(${i})">${player().weapon===i?'EQUIPPED':'EQUIP'}</button>`:'<small>NOT FOUND</small>'}</div>`).join('');
  const armorNames=['Abyssal Mantle','Witchskin Cuirass','Demonplate'];
  let armor=state.armor.length?state.armor.map(a=>{let i=armorNames.indexOf(a);return `<div class="item equipped"><img class="item-art armor-art" src="assets/sprites/armor_set_0${Math.max(1,i+1)}.png" alt=""><b>${a}</b><p>Guardian armor · reduces incoming damage by 2</p><small>RECOVERED</small></div>`}).join(''):'<p class="panel-note">No armor pieces recovered yet. Defeat the region guardians.</p>';
- panel('INVENTORY',`<div class="stats">VITALITY ${Math.ceil(player().hp)}/${player().maxHp} · DAMAGE BONUS +${(state.weaponsUpgraded?14:0)+(state.damageBonus||0)}<br>ARMOR SETS: ${state.armor.length}/3 · VOID RESONANCE: ${player().void}/10</div><h3 class="eyebrow">WEAPON RACK</h3><div class="inventory-grid">${w}</div><h3 class="eyebrow" style="margin-top:22px">ARMOR EQUIPMENT</h3><div class="inventory-grid">${armor}</div><p class="panel-note">Press 1–4 to switch weapons. Armor pieces stack and reduce damage automatically. The Void Spiral awakens every weapon.</p>`);
+ panel('INVENTORY',`<div class="stats">VITALITY ${Math.ceil(player().hp)}/${player().maxHp} · DAMAGE BONUS ${state.weaponsUpgraded?'+14':''}<br>ARMOR SETS: ${state.armor.length}/3 · VOID RESONANCE: ${player().void}/10</div><h3 class="eyebrow">WEAPON RACK</h3><div class="inventory-grid">${w}</div><h3 class="eyebrow" style="margin-top:22px">ARMOR EQUIPMENT</h3><div class="inventory-grid">${armor}</div><p class="panel-note">Press 1–4 to switch weapons. Armor pieces stack and reduce damage automatically. The Void Spiral awakens every weapon.</p>`);
 }
 window.vwEquip=switchWeapon;
 function moveRegion(dir){
@@ -86,26 +86,25 @@ function moveRegion(dir){
  spawnRegion();updateHud();toast(state.region==='sanctum'?'THE VOID DEMON AWAKENS':regions[state.region].name);
 }
 function attack(){
- const p=player(),w=weapons[p.weapon];if(p.attackCooldown>0||!running)return;p.attack=.30;p.attackCooldown=w.speed;p.attackSerial=(p.attackSerial||0)+1;const damageBonus=(state.weaponsUpgraded?14:0)+(state.damageBonus||0);
- if(p.weapon===3){const speed=430;state.projectiles.push({x:p.x+Math.cos(p.dir)*22,y:p.y+Math.sin(p.dir)*22,vx:Math.cos(p.dir)*speed,vy:Math.sin(p.dir)*speed,life:.72,damage:w.damage+damageBonus});burst(p.x+Math.cos(p.dir)*25,p.y+Math.sin(p.dir)*25,'#c18aff',5);return;}
+ const p=player(),w=weapons[p.weapon];if(p.attackCooldown>0||!running)return;p.attack=.30;p.attackCooldown=w.speed;p.attackSerial=(p.attackSerial||0)+1;
+ if(p.weapon===3){const speed=430;state.projectiles.push({x:p.x+Math.cos(p.dir)*22,y:p.y+Math.sin(p.dir)*22,vx:Math.cos(p.dir)*speed,vy:Math.sin(p.dir)*speed,life:.72,damage:w.damage+(state.weaponsUpgraded?14:0)});burst(p.x+Math.cos(p.dir)*25,p.y+Math.sin(p.dir)*25,'#c18aff',5);return;}
  let hit=false;
- state.enemies.forEach(e=>{if(e.dead)return;let dx=e.x-p.x,dy=e.y-p.y,dist=Math.hypot(dx,dy),a=Math.atan2(dy,dx),diff=Math.atan2(Math.sin(a-p.dir),Math.cos(a-p.dir));const reach=w.range+(p.weapon===2?26:p.weapon===1?34:34),arc=w.arc+.34;if(dist<reach+(e.boss?28:16)&&Math.abs(diff)<arc){let dmg=w.damage+damageBonus+(p.void>=8?2:0);e.hp-=dmg;e.flash=.18;e.hitFlash=.18;hit=true;burst(e.x,e.y,p.weapon===2?'#d8a5ff':'#bb7cff',p.weapon===2?15:10);if(e.hp<=0)killEnemy(e)}});
- state.crates.forEach(c=>{if(c.dead||c.lastHit===p.attackSerial)return;if(Math.hypot(c.x-p.x,c.y-p.y)<(p.weapon===2?94:84)){c.lastHit=p.attackSerial;c.hp--;burst(c.x,c.y,'#8d54b9',5);if(c.hp<=0)breakCrate(c)}});
+ state.enemies.forEach(e=>{if(e.dead)return;let dx=e.x-p.x,dy=e.y-p.y,dist=Math.hypot(dx,dy),a=Math.atan2(dy,dx),diff=Math.atan2(Math.sin(a-p.dir),Math.cos(a-p.dir));const reach=w.range+(p.weapon===2?12:24),arc=w.arc+(p.weapon===2?.28:0);if(dist<reach&&Math.abs(diff)<arc){let dmg=w.damage+(state.weaponsUpgraded?14:0)+(p.void>=8?2:0);e.hp-=dmg;e.flash=.18;e.hitFlash=.18;hit=true;burst(e.x,e.y,p.weapon===2?'#d8a5ff':'#bb7cff',p.weapon===2?15:10);if(e.hp<=0)killEnemy(e)}});
+ state.crates.forEach(c=>{if(c.dead||c.lastHit===p.attackSerial)return;if(Math.hypot(c.x-p.x,c.y-p.y)<(p.weapon===2?46:34)){c.lastHit=p.attackSerial;c.hp--;burst(c.x,c.y,'#8d54b9',5);if(c.hp<=0)breakCrate(c)}});
  if(hit){p.void=Math.min(10,p.void+1);updateHud()}
 }
 function breakCrate(c){c.dead=true;burst(c.x,c.y,'#8d54b9',18);let r=Math.random();if(r<.38){let found=[0,1,2,3].filter(i=>!state.inventory[i]);if(found.length){let got=found[Math.floor(Math.random()*found.length)];state.inventory[got]=true;toast('CRATE LOOT: '+weapons[got].name.toUpperCase());updateHud()}else{potionDrop(c.x,c.y)}}else if(r<.72){potionDrop(c.x,c.y)}else{toast('THE CRATE WAS EMPTY')}}
-function grantVitality(amount=15){const p=player();p.maxHp+=amount;p.hp=Math.min(p.maxHp,p.hp+amount);toast('VITALITY SHARD · MAX HEALTH +'+amount+' · HEALED +'+amount);updateHud()}
-function potionDrop(){grantVitality(15)}
+function potionDrop(){let p=player();p.hp=Math.min(p.maxHp,p.hp+20);toast('VITALITY SHARD · +20 VITALITY');updateHud()}
 function killEnemy(e){
  e.dead=true;burst(e.x,e.y,'#9c5bda',20);
  if(e.boss){
   let armor=e.type==='eel'?'Abyssal Mantle':e.type==='wraith'?'Witchskin Cuirass':'Demonplate';
   if(e.type==='eel')state.defeated.eel=true;if(e.type==='wraith')state.defeated.wraith=true;if(e.type==='demon')state.defeated.demon=true;
-  if(!state.armor.includes(armor))state.armor.push(armor);player().maxHp+=15;player().hp=Math.min(player().maxHp,player().hp+15);
+  if(!state.armor.includes(armor))state.armor.push(armor);player().maxHp+=12;player().hp=Math.min(player().maxHp,player().hp+30);
   if(e.type==='demon'){toast('THE VOID DEMON FALLS — THE FRACTURE QUIETS');running=false;state.enemies.forEach(other=>{if(other!==e)other.dead=true});panel('THE FRACTURE QUIETS',`<p>The three guardians have fallen. The void releases its hold.</p><p class="panel-note">You have completed Void Walker.</p><button onclick="window.vwRestart()">PLAY AGAIN</button>`)}
   else toast(armor+' RECOVERED · NORTH GATE UNSEALED');
  }
- else if(Math.random()<.42){let loot=['Vitality Shard','Void Dust','Old Coin'][Math.floor(Math.random()*3)];if(loot==='Vitality Shard')grantVitality(15);else if(loot==='Void Dust'){player().void=Math.min(10,player().void+2);state.damageBonus=(state.damageBonus||0)+3;toast('VOID DUST · DAMAGE +3')}else toast('ENEMY DROP: '+loot.toUpperCase());updateHud()}
+ else if(Math.random()<.42){let loot=['Vitality Shard','Void Dust','Old Coin'][Math.floor(Math.random()*3)];if(loot==='Vitality Shard')player().hp=Math.min(player().maxHp,player().hp+12);else if(loot==='Void Dust')player().void=Math.min(10,player().void+2);toast('ENEMY DROP: '+loot.toUpperCase())}
  updateHud();
 }
 function burst(x,y,color,n){for(let i=0;i<n;i++)state.particles.push({x,y,vx:(Math.random()-.5)*180,vy:(Math.random()-.5)*180,life:.45+Math.random()*.35,color})}
@@ -114,7 +113,7 @@ function update(dt){
  if(!running||overlayOpen)return;const p=player();state.elapsed+=dt;
  p.attack=Math.max(0,p.attack-dt);p.attackCooldown=Math.max(0,p.attackCooldown-dt);p.invuln=Math.max(0,p.invuln-dt);
  let dx=(keys.ArrowRight||keys.d||touch.right?1:0)-(keys.ArrowLeft||keys.a||touch.left?1:0),dy=(keys.ArrowDown||keys.s||touch.down?1:0)-(keys.ArrowUp||keys.w||touch.up?1:0);
- if(dx||dy){let l=Math.hypot(dx,dy);dx/=l;dy/=l;p.x+=dx*165*dt;p.y+=dy*165*dt;p.moveDir=Math.atan2(dy,dx);p.facingUp=dy<-.35&&Math.abs(dy)>Math.abs(dx)}
+ if(dx||dy){let l=Math.hypot(dx,dy);dx/=l;dy/=l;p.x+=dx*165*dt;p.y+=dy*165*dt;p.dir=Math.atan2(dy,dx)}
  if(p.x<-330){p.x=-330;if(state.region==='center')moveRegion('left');else if(state.region==='factory')moveRegion('left')}
  if(p.x>330){p.x=330;if(state.region==='center')moveRegion('right');else if(state.region==='oasis')moveRegion('right')}
  if(p.y<-240){p.y=-240;if(state.region==='center')moveRegion('up')}
@@ -140,34 +139,27 @@ function gameOver(){running=false;panel('THE VOID CLAIMS YOU',`<p>The fracture c
 function draw(){
  ctx.clearRect(0,0,W,H);let p=player(),camX=p.x,camY=p.y,scale=Math.min(W/850,H/570,1.25),cx=W/2,cy=H/2;
  ctx.save();ctx.translate(cx,cy);ctx.scale(scale,scale);ctx.translate(-camX,-camY);
- const reg=regions[state.region];ctx.fillStyle=reg.bg;ctx.fillRect(camX-900,camY-700,1800,1400);
- // Each region uses one complete illustrated environment panel. These are scene paintings,
- // not repeatable floor tiles; drawing each exactly once prevents the visible wallpaper effect.
- const bg=spriteImages['region_bg_'+state.region];
- if(bg&&bg.complete&&bg.naturalWidth){
-  const bw=1200,bh=1112;ctx.save();ctx.globalAlpha=.94;ctx.drawImage(bg,-bw/2,-bh/2,bw,bh);ctx.restore();
- }
- // Clean room perimeter. Door gaps mark the actual exits so players can read the map at a glance.
- ctx.save();ctx.lineWidth=5;ctx.strokeStyle='rgba(176,126,210,.38)';ctx.shadowBlur=12;ctx.shadowColor='rgba(145,74,190,.25)';
- const bx=350,by=255,gap=92;
- // left and right walls, with openings only where this room connects
- if(state.region==='center'||state.region==='factory'){ctx.beginPath();ctx.moveTo(-bx,-by);ctx.lineTo(-bx,-gap);ctx.moveTo(-bx,gap);ctx.lineTo(-bx,by);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(-bx,-by);ctx.lineTo(-bx,by);ctx.stroke()}
- if(state.region==='center'||state.region==='oasis'){ctx.beginPath();ctx.moveTo(bx,-by);ctx.lineTo(bx,-gap);ctx.moveTo(bx,gap);ctx.lineTo(bx,by);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(bx,-by);ctx.lineTo(bx,by);ctx.stroke()}
- // top exit is the locked/unlocked north gate from the starting region
- if(state.region!=='sanctum'){ctx.beginPath();ctx.moveTo(-bx,-by);ctx.lineTo(-gap,-by);ctx.moveTo(gap,-by);ctx.lineTo(bx,-by);ctx.stroke()}
- if(state.region==='sanctum'){ctx.beginPath();ctx.moveTo(-bx,by);ctx.lineTo(-gap,by);ctx.moveTo(gap,by);ctx.lineTo(bx,by);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(-bx,by);ctx.lineTo(bx,by);ctx.stroke()}
- const gate=(x,y,vertical,active,label)=>{ctx.save();ctx.translate(x,y);if(vertical)ctx.rotate(Math.PI/2);ctx.strokeStyle=active?'rgba(205,151,255,.9)':'rgba(112,83,130,.55)';ctx.fillStyle=active?'rgba(119,56,159,.18)':'rgba(35,24,45,.65)';ctx.lineWidth=3;ctx.shadowBlur=active?18:5;ctx.beginPath();ctx.moveTo(-34,28);ctx.lineTo(-34,-10);ctx.quadraticCurveTo(-34,-42,0,-42);ctx.quadraticCurveTo(34,-42,34,-10);ctx.lineTo(34,28);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(-20,24);ctx.lineTo(-20,-8);ctx.quadraticCurveTo(-20,-28,0,-28);ctx.quadraticCurveTo(20,-28,20,-8);ctx.lineTo(20,24);ctx.stroke();if(!active){ctx.strokeStyle='rgba(220,180,240,.75)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-9,-7);ctx.lineTo(9,11);ctx.moveTo(9,-7);ctx.lineTo(-9,11);ctx.stroke()}ctx.restore()};
- if(state.region==='center'){gate(-bx,0,true,true,'OASIS');gate(bx,0,true,true,'FACTORY');gate(0,-by,false,state.defeated.eel&&state.defeated.wraith,'SANCTUM')}
- if(state.region==='oasis')gate(bx,0,true,true,'CENTER');
- if(state.region==='factory')gate(-bx,0,true,true,'CENTER');
- if(state.region==='sanctum')gate(0,by,false,true,'CENTER');
- ctx.restore();
- // Distinctive room features, kept restrained so they do not obscure combat.
- if(state.region==='oasis'){ctx.save();ctx.globalAlpha=.2;for(let i=0;i<12;i++){let x=Math.sin(state.elapsed*.35+i*2.1)*210,y=Math.cos(state.elapsed*.28+i*1.7)*100;ctx.strokeStyle='#a86cff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y,30+i%4*13,7+i%3*4,Math.sin(state.elapsed+i)*.2,0,Math.PI*2);ctx.stroke()}ctx.restore()}
- if(state.region==='sanctum'){ctx.save();ctx.strokeStyle='rgba(171,91,218,.36)';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,-80,145,0,Math.PI*2);ctx.stroke();drawSprite('portal_arch',0,-80,170,155);ctx.restore()}
- if(state.region==='oasis'){[[-285,-150],[275,-135],[-300,175],[305,165]].forEach(([x,y])=>drawSprite('void_crystal',x,y,30,58,.72));}
- if(state.region==='center'){[[-260,-170],[260,-165],[-285,185],[290,180]].forEach(([x,y])=>drawSprite('void_crystal',x,y,32,62,.8));}
- if(state.region==='sanctum'){[[-240,-25],[240,-25],[-210,190],[210,190]].forEach(([x,y])=>drawSprite('void_crystal',x,y,22,52,.75));}
+ const reg=regions[state.region];ctx.fillStyle=reg.bg;ctx.fillRect(camX-700,camY-500,1400,1000);
+ // Subtle hand-built stone paving; do not tile the atlas thumbnails (they are scene panels, not floor tiles).
+ ctx.save();for(let gx=-720;gx<=720;gx+=92)for(let gy=-520;gy<=520;gy+=76){const wx=Math.floor((camX+gx)/92)*92,wy=Math.floor((camY+gy)/76)*76,j=rand(wx*.013+wy*.021+worldSeeds[state.region]);ctx.beginPath();ctx.moveTo(wx+3,wy+4);ctx.lineTo(wx+86,wy+2+j*5);ctx.lineTo(wx+90,wy+69);ctx.lineTo(wx+7,wy+73);ctx.closePath();ctx.fillStyle=`rgba(${j>.5?48:35},${j>.5?34:27},${j>.5?57:44},.22)`;ctx.fill();ctx.strokeStyle='rgba(174,127,199,.10)';ctx.lineWidth=1;ctx.stroke()}ctx.restore();
+ const bg=spriteImages['region_bg_'+state.region];if(bg&&bg.complete&&bg.naturalWidth){ctx.save();ctx.globalAlpha=.34;ctx.drawImage(bg,camX-390,camY-285,780,570);ctx.restore();}
+ // cracked ground texture
+ for(let i=0;i<95;i++){let x=camX+(rand(i+worldSeeds[state.region])*1300-650),y=camY+(rand(i*2+worldSeeds[state.region])*900-450);ctx.strokeStyle=i%4===0?'rgba(166,91,210,.24)':'rgba(100,66,125,.12)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+rand(i+8)*22-11,y+rand(i+18)*28);ctx.lineTo(x+rand(i+20)*18,y+rand(i+21)*22);ctx.stroke()}
+ // distant black fissures
+ for(let i=0;i<8;i++){let x=camX+(i-4)*145+Math.sin(i)*30,y=camY+Math.cos(i*4)*220;ctx.fillStyle='#08050d';ctx.beginPath();ctx.ellipse(x,y,38+rand(i)*25,18+rand(i+2)*14,rand(i)*2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(132,60,177,.45)';ctx.lineWidth=3;ctx.stroke()}
+ // region landmarks
+ if(state.region==='oasis'){ctx.fillStyle='#160d29';ctx.beginPath();ctx.ellipse(0,0,240,125,-.1,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#9b57cb';ctx.lineWidth=4;ctx.stroke();for(let i=0;i<22;i++){ctx.strokeStyle='rgba(177,103,255,.24)';ctx.beginPath();ctx.arc((rand(i+5)-.5)*380,(rand(i+9)-.5)*190,8+rand(i)*22,0,Math.PI*2);ctx.stroke()}}
+ if(state.region==='factory'){ctx.save();ctx.strokeStyle='rgba(166,91,194,.26)';ctx.lineWidth=6;for(let i=0;i<5;i++){let x=-320+i*160;ctx.beginPath();ctx.moveTo(x,-235);ctx.lineTo(x,-155);ctx.lineTo(x+22,-125);ctx.lineTo(x+22,-65);ctx.stroke();ctx.fillStyle='rgba(196,102,220,.22)';ctx.beginPath();ctx.arc(x,-235,5,0,Math.PI*2);ctx.fill()}ctx.strokeStyle='rgba(126,77,151,.24)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-330,40);ctx.lineTo(-160,25);ctx.lineTo(15,75);ctx.lineTo(330,35);ctx.stroke();ctx.restore()}
+ if(state.region==='sanctum'){ctx.strokeStyle='rgba(171,91,218,.5)';ctx.lineWidth=6;ctx.beginPath();ctx.arc(0,-80,170,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#08050e';ctx.beginPath();ctx.ellipse(0,-80,120,75,0,0,Math.PI*2);ctx.fill();drawSprite('portal_arch',0,-80,140,125)}
+ // Existing environment props add silhouette and scale to each region.
+ if(state.region==='oasis'){[[-285,-150],[275,-135],[-300,175],[305,165]].forEach(([x,y])=>drawSprite('void_crystal',x,y,30,58,.75));}
+ // Factory architecture is drawn with the pipework above; no misassigned icon sprites are used as pillars.
+ if(state.region==='center'){[[-260,-170],[260,-165],[-285,185],[290,180]].forEach(([x,y])=>drawSprite('void_crystal',x,y,32,62,.85));}
+ if(state.region==='sanctum'){[[-240,-25],[240,-25],[-210,190],[210,190]].forEach(([x,y])=>drawSprite('void_crystal',x,y,22,52,.8));}
+ // Region-specific environmental atmosphere.
+ if(state.region==='oasis'){ctx.save();ctx.globalAlpha=.22;for(let i=0;i<16;i++){let x=Math.sin(state.elapsed*.35+i*2.1)*210,y=Math.cos(state.elapsed*.28+i*1.7)*100;ctx.strokeStyle='#a86cff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y,30+i%4*13,7+i%3*4,Math.sin(state.elapsed+i)*.2,0,Math.PI*2);ctx.stroke()}ctx.restore()}
+ if(state.region==='factory'){ctx.save();for(let i=0;i<6;i++){let x=-300+i*120;ctx.fillStyle='rgba(5,4,8,.5)';ctx.fillRect(x,-220,72,22);ctx.fillStyle='rgba(165,82,190,.35)';ctx.fillRect(x+8,-215,5,12);ctx.fillRect(x+20,-215,5,12)}ctx.strokeStyle='rgba(162,75,190,.28)';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-330,40);ctx.lineTo(-130,10);ctx.lineTo(15,75);ctx.lineTo(330,35);ctx.stroke();ctx.restore()}
+ if(state.region==='center'){ctx.save();ctx.strokeStyle='rgba(160,82,210,.22)';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-340,210);ctx.lineTo(-120,110);ctx.lineTo(20,155);ctx.lineTo(190,35);ctx.lineTo(340,70);ctx.stroke();ctx.restore()}
  // crates
  state.crates.forEach(c=>{if(c.dead){drawSprite('void_crate_broken',c.x,c.y,52,30,.8);return}ctx.save();ctx.translate(c.x,c.y);ctx.shadowBlur=c.glow?18:0;ctx.shadowColor='#a45dff';if(!drawSprite('void_crate',0,0,56,58)){ctx.fillStyle='#0a080f';ctx.fillRect(-13,-12,26,22);ctx.strokeStyle=c.glow?'#b77aff':'#594365';ctx.strokeRect(-13,-12,26,22)}if(c.glow){ctx.strokeStyle='rgba(208,166,255,'+(.45+Math.sin(state.elapsed*4)*.3)+')';ctx.lineWidth=2;ctx.strokeRect(-21, -23,42,46)}ctx.restore()});
  // The rare spiral orb is a world pickup, placed once per run in one region.
@@ -181,46 +173,24 @@ function draw(){
  if(e.wind>0){ctx.strokeStyle='rgba(255,104,157,'+(.35+.45*(e.wind/(e.boss?.34:.25)))+')';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,Math.max(12,e.boss?43:24),e.boss?44:22,7,0,0,Math.PI*2);ctx.stroke()}
  if(e.specialWind>0){ctx.strokeStyle=e.type==='wraith'?'rgba(255,120,205,.9)':'rgba(212,111,255,.8)';ctx.lineWidth=4;if(e.type==='wraith'){ctx.rotate(e.specialDir||e.dir);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(250,0);ctx.stroke()}else{ctx.beginPath();ctx.arc(0,0,190*(1-e.specialWind/1.05),0,Math.PI*2);ctx.stroke()}} if(e.boss){const bw=e.type==='demon'?112:76;ctx.fillStyle='#09050e';ctx.fillRect(-bw/2,-(e.type==='demon'?112:70),bw,7);ctx.fillStyle='#ce4eaa';ctx.fillRect(-bw/2,-(e.type==='demon'?112:70),bw*Math.max(0,e.hp/e.maxHp),7)}
  ctx.restore()});
- // Heroine remains upright; only her facing direction flips. Aiming rotates the weapon,
- // never the entire character sprite (which caused the sideways/spinning appearance).
- ctx.save();ctx.translate(p.x,p.y);
- ctx.fillStyle='rgba(0,0,0,.62)';ctx.beginPath();ctx.ellipse(0,16,19,8,0,0,Math.PI*2);ctx.fill();
+ // player shadow and angled body
+ ctx.save();ctx.translate(p.x,p.y);ctx.fillStyle='rgba(0,0,0,.6)';ctx.beginPath();ctx.ellipse(0,13,18,8,0,0,Math.PI*2);ctx.fill();
+ ctx.rotate(p.dir);if(p.attack>0&&p.weapon!==3){ctx.strokeStyle=p.weapon===2?'#e1bdff':'#d9a4ff';ctx.shadowBlur=p.weapon===2?28:20;ctx.shadowColor='#b66aff';ctx.lineWidth=p.weapon===2?8:5;ctx.beginPath();if(p.weapon===1){ctx.moveTo(8,-8);ctx.lineTo(46,0);ctx.lineTo(8,8)}else{ctx.arc(p.weapon===2?18:24,0,p.weapon===2?45:35,p.weapon===2?-.72:-.9,p.weapon===2?.72:.9)}ctx.stroke();ctx.strokeStyle='#fff0ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(24,0,p.weapon===2?45:35,-.75,.75);ctx.stroke()}
+ // Illustrated heroine sprite extracted from the approved concept atlas.
  const moving=!!(keys.w||keys.a||keys.s||keys.d||keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||touch.up||touch.down||touch.left||touch.right);
- // Use the dedicated attack poses during the active strike window. The previous
- // renderer never selected hero_attack_* so attacks only showed a generic weapon arc.
- const attackFrameIndex = p.attack > 0
-   ? Math.min(3, Math.floor(((0.30 - p.attack) / 0.30) * 4))
-   : 0;
- const heroFrame = p.invuln > 0
-   ? ['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]
-   : (p.attack > 0 && p.weapon !== 3)
-     ? ['hero_attack_01','hero_attack_02','hero_attack_03','hero_attack_04'][attackFrameIndex]
-     : p.facingUp
-       ? 'hero_idle_06'
-       : moving
-         ? ['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]
-         : ['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
+ const heroFrame=p.invuln>0?['hero_hurt_01','hero_hurt_02'][Math.floor(state.elapsed*14)%2]:moving?['hero_walk_01','hero_walk_02','hero_walk_03','hero_walk_04'][Math.floor(state.elapsed*7)%4]:['hero_idle_01','hero_idle_02','hero_idle_03'][Math.floor(state.elapsed*2)%3];
  const heroImg=spriteImages[heroFrame]||spriteImages.hero_idle_01;
- if(heroImg&&heroImg.complete&&heroImg.naturalWidth){
-  ctx.save();if(Math.cos(p.dir)<0){ctx.scale(-1,1)}
-  const attacking=p.attack>0 && p.weapon!==3;
-  const attackPose=attacking && heroFrame.startsWith('hero_attack_');
-  const dw=attackPose?94:68,dh=attackPose?108:108;
-  ctx.imageSmoothingEnabled=true;ctx.drawImage(heroImg,-dw/2,-dh/2-3,dw,dh);ctx.restore();
- } else {
+ if(heroImg&&heroImg.complete&&heroImg.naturalWidth){ctx.save();ctx.rotate(-p.dir+Math.PI/2);const attacking=p.attack>0;const dw=attacking?78:70,dh=attacking?104:112;ctx.drawImage(heroImg,-dw/2,-dh/2-3,dw,dh);ctx.restore();}
+ else {
   ctx.fillStyle='#0a080f';ctx.beginPath();ctx.ellipse(0,3,12,17,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#25142f';ctx.beginPath();ctx.moveTo(-10,-3);ctx.lineTo(0,-19);ctx.lineTo(13,-2);ctx.lineTo(10,15);ctx.lineTo(-10,15);ctx.fill();ctx.strokeStyle='#80549e';ctx.lineWidth=1.5;ctx.stroke();
   ctx.fillStyle='#07060b';ctx.beginPath();ctx.ellipse(0,-15,12,15,0,0,Math.PI*2);ctx.fill();ctx.fillRect(-12,-17,-3,28);ctx.fillRect(9,-18,4,28);ctx.fillStyle='#d5b9d6';ctx.beginPath();ctx.ellipse(0,-17,6,7,0,0,Math.PI*2);ctx.fill();
  }
- // Weapon is a separate, aim-rotated layer so the heroine's body stays vertical.
- ctx.save();ctx.translate(0,-9);ctx.rotate(p.dir);
+ // Equipped weapon uses its existing illustrated asset.
  const weaponSprite=['weapon_sword','weapon_knife','weapon_mace','weapon_staff'][p.weapon];
- if(!drawSprite(weaponSprite,attackPose?29:25,0,(p.weapon===1?15:p.weapon===2?20:17)*(attackPose?.82:1),(p.weapon===3?34:29)*(attackPose?.82:1))){
+ if(!drawSprite(weaponSprite,25,0,p.weapon===1?15:p.weapon===2?20:17,p.weapon===3?34:29)){
   ctx.strokeStyle=state.weaponsUpgraded?'#b983ff':'#b7a2c8';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(27,0);ctx.stroke();
  }
- if(p.attack>0&&p.weapon!==3){ctx.strokeStyle=p.weapon===2?'#e1bdff':'#d9a4ff';ctx.shadowBlur=p.weapon===2?22:15;ctx.shadowColor='#b66aff';ctx.lineWidth=p.weapon===2?6:4;ctx.beginPath();ctx.arc(p.weapon===2?18:24,0,p.weapon===2?45:35,p.weapon===2?-.72:-.9,p.weapon===2?.72:.9);ctx.stroke()}
- ctx.restore();
- if(p.invuln>0){ctx.strokeStyle='rgba(207,154,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,24,0,Math.PI*2);ctx.stroke()}
- ctx.restore();
+ if(p.invuln>0){ctx.strokeStyle='rgba(207,154,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,24,0,Math.PI*2);ctx.stroke()}ctx.restore();
  state.projectiles.forEach(b=>{ctx.save();ctx.shadowBlur=18;ctx.shadowColor='#c58aff';ctx.fillStyle='#e2c5ff';ctx.beginPath();ctx.arc(b.x,b.y,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(180,110,255,.7)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(b.x-b.vx*.035,b.y-b.vy*.035);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore()});
  state.particles.forEach(q=>{ctx.globalAlpha=Math.max(0,q.life);ctx.fillStyle=q.color;ctx.fillRect(q.x,q.y,3,3);ctx.globalAlpha=1});
  ctx.restore();
@@ -233,15 +203,13 @@ document.addEventListener('keydown',e=>{keys[e.key]=true;if([' ','ArrowUp','Arro
 document.addEventListener('keyup',e=>keys[e.key]=false);
 function clearInputs(){Object.keys(keys).forEach(k=>keys[k]=false);Object.keys(touch).forEach(k=>touch[k]=false)}
 window.addEventListener('blur',clearInputs);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInputs()});
-function aimFromPointer(e){const rect=canvas.getBoundingClientRect(),scale=Math.min(W/850,H/570,1.25);const dx=(e.clientX-rect.left-W/2)/scale,dy=(e.clientY-rect.top-H/2)/scale;player().dir=Math.atan2(dy,dx)}
-canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;aimFromPointer(e)});
-canvas.addEventListener('pointerdown',e=>{if(e.button!==0||overlayOpen||!running)return;e.preventDefault();aimFromPointer(e);attack()});
+canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const rect=canvas.getBoundingClientRect(),scale=Math.min(W/850,H/570,1.25);const wx=(e.clientX-rect.left-W/2)/scale+player().x,wy=(e.clientY-rect.top-H/2)/scale+player().y;player().dir=Math.atan2(wy-player().y,wx-player().x)});
 
 document.querySelectorAll('[data-slot]').forEach(b=>b.addEventListener('click',()=>switchWeapon(+b.dataset.slot)));
 $('close-panel').onclick=closePanel;$('start-btn').onclick=()=>{$('start-screen').classList.add('hidden');running=true;toast('THE FRACTURE STIRS')};$('restart-run-btn').onclick=()=>{if(confirm('Restart this run from the beginning?'))restartRun()};
 $('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closePanel()});
 document.querySelectorAll('[data-move]').forEach(b=>{let k=b.dataset.move;b.addEventListener('pointerdown',e=>{e.preventDefault();touch[k]=true});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>touch[k]=false))});
 $('mobile-attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});$('mobile-inventory').onclick=inventoryPanel;
-$('hint').textContent='WASD / ARROWS MOVE · MOUSE AIM + CLICK ATTACK · SPACE / J ATTACK · I INVENTORY · 1–4 SWITCH WEAPON';
+$('hint').textContent='WASD / ARROWS MOVE · MOUSE AIM · SPACE / J ATTACK · I INVENTORY · 1–4 SWITCH WEAPON';
 updateHud();
 })();
