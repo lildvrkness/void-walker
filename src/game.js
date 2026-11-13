@@ -6,22 +6,22 @@ const spriteNames = ['region_bg_center','region_bg_oasis','region_bg_factory','r
 spriteNames.forEach(name=>{const img=new Image();img.src='assets/sprites/'+name+'.png';spriteImages[name]=img;});
 
 // Sound system
-// Sound system
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let bgm = null;
+
 function unlockAudio() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  startAmbience();
+  startBGM();
 }
 document.addEventListener('keydown', unlockAudio, { once: true });
 document.addEventListener('pointerdown', unlockAudio, { once: true });
 
-function playTone(freq, duration, type = 'square', vol = 0.08, detune = 0) {
+function playTone(freq, duration, type = 'square', vol = 0.08) {
   if (audioCtx.state !== 'running') return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = type;
   osc.frequency.value = freq;
-  osc.detune.value = detune;
   gain.gain.setValueAtTime(vol, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
   osc.connect(gain);
@@ -33,19 +33,19 @@ function playTone(freq, duration, type = 'square', vol = 0.08, detune = 0) {
 // Weapon-specific attacks
 function sfxAttack(weaponId) {
   switch (weaponId) {
-    case 0: // sword – sharp slash
+    case 0: // sword
       playTone(280, 0.14, 'sawtooth', 0.07);
       playTone(140, 0.18, 'square', 0.04);
       break;
-    case 1: // knife – quick high cut
+    case 1: // knife
       playTone(420, 0.08, 'square', 0.06);
       playTone(210, 0.1, 'sawtooth', 0.03);
       break;
-    case 2: // mace – heavy thud
+    case 2: // mace
       playTone(90, 0.2, 'square', 0.1);
       playTone(60, 0.25, 'triangle', 0.06);
       break;
-    case 3: // staff / orb – soft whoosh + chime
+    case 3: // staff
       playTone(320, 0.16, 'sine', 0.05);
       playTone(480, 0.22, 'sine', 0.04);
       playTone(160, 0.3, 'triangle', 0.03);
@@ -58,27 +58,16 @@ function sfxAttack(weaponId) {
 function sfxHit()    { playTone(80, 0.15, 'square', 0.09); }
 function sfxPickup() { playTone(523, 0.08, 'sine', 0.05); playTone(784, 0.12, 'sine', 0.04); }
 
-// Soft eerie ambient drone
-let ambienceStarted = false;
-function startAmbience() {
-  if (ambienceStarted || audioCtx.state !== 'running') return;
-  ambienceStarted = true;
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc1.type = 'sine';
-  osc2.type = 'triangle';
-  osc1.frequency.value = 55;
-  osc2.frequency.value = 82.5;
-  gain.gain.value = 0.018; // very low volume
-  osc1.connect(gain);
-  osc2.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc1.start();
-  osc2.start();
+// Background music
+function startBGM() {
+  if (bgm) return;
+  bgm = new Audio('https://files.catbox.moe/br2r9t.ogg');
+  bgm.loop = true;
+  bgm.volume = 0.25; // adjust as needed
+  bgm.play().catch(() => {});
 }
 
-// Short completion jingle
+// Short completion jingle (plays over the music)
 function sfxWin() {
   playTone(392, 0.18, 'sine', 0.06);
   setTimeout(() => playTone(523, 0.18, 'sine', 0.06), 180);
