@@ -1,6 +1,6 @@
 # VOID WALKER
 
-A short-form, browser-based dark fantasy action RPG built with HTML Canvas, CSS, and JavaScript. It is designed as one complete run from the first breach to the final guardian.
+A short-form, browser-based dark fantasy action RPG built with HTML Canvas, CSS, Python, and JavaScript. It is designed as one complete run from the first breach to the final guardian.
 
 ## Run locally
 
