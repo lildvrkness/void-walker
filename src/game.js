@@ -6,19 +6,22 @@ const spriteNames = ['region_bg_center','region_bg_oasis','region_bg_factory','r
 spriteNames.forEach(name=>{const img=new Image();img.src='assets/sprites/'+name+'.png';spriteImages[name]=img;});
 
 // Sound system
+// Sound system
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function unlockAudio() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
+  startAmbience();
 }
 document.addEventListener('keydown', unlockAudio, { once: true });
 document.addEventListener('pointerdown', unlockAudio, { once: true });
 
-function playTone(freq, duration, type = 'square', vol = 0.08) {
+function playTone(freq, duration, type = 'square', vol = 0.08, detune = 0) {
   if (audioCtx.state !== 'running') return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = type;
   osc.frequency.value = freq;
+  osc.detune.value = detune;
   gain.gain.setValueAtTime(vol, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
   osc.connect(gain);
@@ -26,9 +29,62 @@ function playTone(freq, duration, type = 'square', vol = 0.08) {
   osc.start();
   osc.stop(audioCtx.currentTime + duration);
 }
-function sfxAttack() { playTone(220, 0.12, 'sawtooth', 0.07); playTone(110, 0.18, 'square', 0.04); }
-function sfxHit()    { playTone(80, 0.15, 'square', 0.1); }
-function sfxPickup() { playTone(440, 0.08, 'sine', 0.06); playTone(660, 0.12, 'sine', 0.04); }
+
+// Weapon-specific attacks
+function sfxAttack(weaponId) {
+  switch (weaponId) {
+    case 0: // sword – sharp slash
+      playTone(280, 0.14, 'sawtooth', 0.07);
+      playTone(140, 0.18, 'square', 0.04);
+      break;
+    case 1: // knife – quick high cut
+      playTone(420, 0.08, 'square', 0.06);
+      playTone(210, 0.1, 'sawtooth', 0.03);
+      break;
+    case 2: // mace – heavy thud
+      playTone(90, 0.2, 'square', 0.1);
+      playTone(60, 0.25, 'triangle', 0.06);
+      break;
+    case 3: // staff / orb – soft whoosh + chime
+      playTone(320, 0.16, 'sine', 0.05);
+      playTone(480, 0.22, 'sine', 0.04);
+      playTone(160, 0.3, 'triangle', 0.03);
+      break;
+    default:
+      playTone(220, 0.12, 'sawtooth', 0.07);
+  }
+}
+
+function sfxHit()    { playTone(80, 0.15, 'square', 0.09); }
+function sfxPickup() { playTone(523, 0.08, 'sine', 0.05); playTone(784, 0.12, 'sine', 0.04); }
+
+// Soft eerie ambient drone
+let ambienceStarted = false;
+function startAmbience() {
+  if (ambienceStarted || audioCtx.state !== 'running') return;
+  ambienceStarted = true;
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc1.type = 'sine';
+  osc2.type = 'triangle';
+  osc1.frequency.value = 55;
+  osc2.frequency.value = 82.5;
+  gain.gain.value = 0.018; // very low volume
+  osc1.connect(gain);
+  osc2.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc1.start();
+  osc2.start();
+}
+
+// Short completion jingle
+function sfxWin() {
+  playTone(392, 0.18, 'sine', 0.06);
+  setTimeout(() => playTone(523, 0.18, 'sine', 0.06), 180);
+  setTimeout(() => playTone(659, 0.28, 'sine', 0.07), 360);
+  setTimeout(() => playTone(784, 0.4, 'sine', 0.05), 540);
+}
 
 const $=id=>document.getElementById(id);
 let W=0,H=0, last=0, running=false, toastTimer=0, overlayOpen=false;
@@ -110,7 +166,7 @@ function moveRegion(dir){
 }
 function attack(){
  const p=player(),w=weapons[p.weapon];if(p.attackCooldown>0||!running)return;
- sfxAttack();
+ sfxAttack(p.weapon);
  p.attack=.30;p.attackCooldown=w.speed;p.attackSerial=(p.attackSerial||0)+1;const damageBonus=(state.weaponsUpgraded?14:0)+(state.damageBonus||0);
  if(p.weapon===3){const speed=430;state.projectiles.push({x:p.x+Math.cos(p.dir)*22,y:p.y+Math.sin(p.dir)*22,vx:Math.cos(p.dir)*speed,vy:Math.sin(p.dir)*speed,life:.72,damage:w.damage+damageBonus});burst(p.x+Math.cos(p.dir)*25,p.y+Math.sin(p.dir)*25,'#c18aff',5);return;}
  let hit=false;
@@ -127,8 +183,14 @@ function killEnemy(e){
   let armor=e.type==='eel'?'Abyssal Mantle':e.type==='wraith'?'Witchskin Cuirass':'Demonplate';
   if(e.type==='eel')state.defeated.eel=true;if(e.type==='wraith')state.defeated.wraith=true;if(e.type==='demon')state.defeated.demon=true;
   if(!state.armor.includes(armor))state.armor.push(armor);player().maxHp+=15;player().hp=Math.min(player().maxHp,player().hp+15);
-  if(e.type==='demon'){toast('THE VOID DEMON FALLS — THE FRACTURE QUIETS');running=false;state.enemies.forEach(other=>{if(other!==e)other.dead=true});panel('THE FRACTURE QUIETS',`<p>The three guardians have fallen. The void releases its hold.</p><p class="panel-note">You have completed Void Walker.</p><button onclick="window.vwRestart()">PLAY AGAIN</button>`)}
-  else toast(armor+' RECOVERED · NORTH GATE UNSEALED');
+  if(e.type==='demon'){
+  sfxWin();
+  toast('THE VOID DEMON FALLS — THE FRACTURE QUIETS');
+  running=false;
+  state.enemies.forEach(other=>{if(other!==e)other.dead=true});
+  panel('THE FRACTURE QUIETS',`<p>The three guardians have fallen. The void releases its hold.</p><p class="panel-note">You have completed Void Walker.</p><button onclick="window.vwRestart()">PLAY AGAIN</button>`);
+}
+else toast(armor+' RECOVERED · NORTH GATE UNSEALED');
  }
  else if(Math.random()<.42){let loot=['Vitality Shard','Void Dust','Old Coin'][Math.floor(Math.random()*3)];if(loot==='Vitality Shard')grantVitality(15);else if(loot==='Void Dust'){player().void=Math.min(10,player().void+2);state.damageBonus=(state.damageBonus||0)+3;toast('VOID DUST · DAMAGE +3')}else toast('ENEMY DROP: '+loot.toUpperCase());updateHud()}
  updateHud();
