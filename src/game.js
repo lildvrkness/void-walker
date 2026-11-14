@@ -678,7 +678,7 @@ function killEnemy(e){
     let found=loot[Math.floor(Math.random()*loot.length)];
 
     if(found==='Vitality Shard'){
-      grantVitality(6,3);
+      grantVitality(6,12);
     }
     else if(found==='Void Dust'){
       player().void=Math.min(10,player().void+2);
