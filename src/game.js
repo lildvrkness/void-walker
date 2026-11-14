@@ -577,8 +577,7 @@ function breakCrate(c){
 // --------------------------------------------------
 // VITALITY AND HEALING
 // --------------------------------------------------
-
-if(loot==='Vitality Shard')grantVitality(6,12);
+function grantVitality(maxIncrease=6,heal=12,label='VITALITY SHARD'){
   const p=player(),oldMax=p.maxHp;
   p.maxHp=Math.min(MAX_PLAYER_HP,p.maxHp+maxIncrease);
   const gainedMax=p.maxHp-oldMax;
