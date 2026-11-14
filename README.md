@@ -2,15 +2,16 @@
 
 A short-form, browser-based dark fantasy action RPG built with HTML Canvas, CSS, Python, and JavaScript. It is designed as one complete run from the first breach to the final guardian.
 
-## Run locally
+## Runs locally
 
 Open `index.html` in a modern browser, or serve this folder with any static HTTP server. No build step or external dependency is required.
 
 ## Controls
 
-- WASD / arrow keys: move
+- WASD/arrow keys: move
 - Mouse: aim (desktop)
-- Space / J: attack
+- Space/J: attack
+- Shift/Q/E: Dash
 - I: open or close inventory; Escape closes it
 - 1–4: switch to an unlocked weapon
 - R or the RESTART button: restart the run
@@ -35,7 +36,7 @@ Open `index.html` in a modern browser, or serve this folder with any static HTTP
 
 ## Run format
 
-This is a single-session playthrough. There is no persistent save system: death ends the run, and players can restart at any time.
+This is a single-session playthrough. High Score and Best score is locally stored and reset on exit. There is no persistent save system: death ends the run, and players can restart at any time.
 
 ## Assets
 
