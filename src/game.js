@@ -578,28 +578,37 @@ function breakCrate(c){
 // VITALITY AND HEALING
 // --------------------------------------------------
 
-function grantVitality(maxIncrease=6,heal=3,label='VITALITY SHARD'){
-  const p=player();
-  const oldMax=p.maxHp;
-
+if(loot==='Vitality Shard')grantVitality(6,12);
+  const p=player(),oldMax=p.maxHp;
   p.maxHp=Math.min(MAX_PLAYER_HP,p.maxHp+maxIncrease);
-
   const gainedMax=p.maxHp-oldMax;
-  const healed=Math.min(heal,p.maxHp-p.hp);
-
+  const healed=Math.min(heal,Math.max(0,p.maxHp-p.hp));
   p.hp+=healed;
 
-  toast(
-    label+
-    ' · MAX HEALTH +'+gainedMax+
-    ' · HEALED +'+healed
-  );
-
+  if(gainedMax===0&&healed===0){
+    state.score+=15;
+    toast(label+' · FULL VITALITY · +15 SCORE');
+  } else {
+    toast(label+' · MAX HEALTH +'+gainedMax+' · HEALED +'+healed);
+  }
   updateHud();
 }
 
 function potionDrop(){
-  grantVitality(0,12,'HEALING POTION');
+  const p=player();
+  const missing=p.maxHp-p.hp;
+
+  if(missing<=0){
+    state.score+=15;
+    toast('HEALING POTION · FULL HEALTH · +15 SCORE');
+    updateHud();
+    return;
+  }
+
+  const healed=Math.min(12,missing);
+  p.hp+=healed;
+  toast('HEALING POTION · HEALED +'+healed);
+  updateHud();
 }
 
 // --------------------------------------------------
@@ -764,7 +773,7 @@ function dash(){
 
   p.moveDir=Math.atan2(p.dashY,p.dashX);
 
-  burst(p.x,p.y,'#77ffdb',10);
+  burst(p.x,p.y,'#b56cff',10);
 }
 
 function burst(x,y,color,n){
@@ -1611,7 +1620,7 @@ function draw(){
   if(p.invuln>0||p.dashTime>0||p.dashGrace>0){
     ctx.strokeStyle=
       p.dashTime>0||p.dashGrace>0
-        ?'rgba(119,255,219,.9)'
+        ?'rgba(181,108,255,.95)'
         :'rgba(207,154,255,.7)';
 
     ctx.lineWidth=2;
@@ -1621,7 +1630,7 @@ function draw(){
   }
 
   if(p.dashCooldown>0){
-    ctx.strokeStyle='rgba(119,255,219,.35)';
+    ctx.strokeStyle='rgba(181,108,255,.4)';
     ctx.lineWidth=2;
 
     ctx.beginPath();
